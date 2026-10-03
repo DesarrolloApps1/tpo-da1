@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Take a Break</string>
+
+    <string name="tab_home">Inicio</string>
+    <string name="tab_explore">Explorar</string>
+    <string name="tab_activity">Actividad</string>
+    <string name="profile">Perfil</string>
+
+    <string name="points">%1$d pts</string>
+    <string name="home_today">Hoy: %1$d de %2$d pts</string>
+    <string name="home_empty">Todavía no hay pausas. Dejá el teléfono y volvé más tarde.</string>
+    <string name="explore_empty">Todavía no hay premios guardados.</string>
+    <string name="activity_empty">Tus pausas de los últimos 30 días van a aparecer acá.</string>
+    <string name="redemptions_empty">Todavía no canjeaste ningún premio.</string>
+    <string name="reward_not_found">No encontramos este premio.</string>
+
+    <string name="set_goal">Fijar como meta</string>
+    <string name="redeem">Canjear</string>
+    <string name="redeem_confirm">Confirmar canje</string>
+    <string name="redeem_pending">Sin conexión. Tus puntos quedan reservados y el canje se confirma al volver la red.</string>
+    <string name="my_redemptions">Mis canjes</string>
+    <string name="done">Listo</string>
+
+    <string name="onboarding_title">1 hora = 1 recompensa</string>
+    <string name="continue_label">Continuar</string>
+
+    <string name="offline_banner">Sin conexión · tus pausas se siguen contando</string>
+    <string name="error_generic">Algo salió mal.</string>
+    <string name="retry">Reintentar</string>
+
+    <string name="notification_channel">Pausas y canjes</string>
+    <string name="notification_break_validated">Break validado: +%1$d pts</string>
+    <string name="notification_redemption_confirmed">Tu canje se confirmó. Ya podés mostrar el código.</string>
+</resources>
