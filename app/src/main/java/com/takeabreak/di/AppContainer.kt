@@ -1,0 +1,88 @@
+package com.takeabreak.di
+
+import android.content.Context
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.room.Room
+import com.takeabreak.BuildConfig
+import com.takeabreak.TakeABreakApp
+import com.takeabreak.data.local.AppDatabase
+import com.takeabreak.data.local.SettingsDataStore
+import com.takeabreak.data.remote.TakeABreakApi
+import com.takeabreak.data.repository.BreakRepositoryImpl
+import com.takeabreak.data.repository.RedemptionRepositoryImpl
+import com.takeabreak.data.repository.RewardRepositoryImpl
+import com.takeabreak.domain.repository.BreakRepository
+import com.takeabreak.domain.repository.NetworkMonitor
+import com.takeabreak.domain.repository.RedemptionRepository
+import com.takeabreak.domain.repository.RewardRepository
+import com.takeabreak.domain.repository.SettingsRepository
+import com.takeabreak.domain.usecase.GetBreakHistory
+import com.takeabreak.domain.usecase.GetHomeSummary
+import com.takeabreak.domain.usecase.GetRedemptions
+import com.takeabreak.domain.usecase.GetRewards
+import com.takeabreak.domain.usecase.RedeemReward
+import com.takeabreak.domain.usecase.SetGoal
+import com.takeabreak.domain.usecase.SyncBreaks
+import com.takeabreak.platform.location.FusedLocationProvider
+import com.takeabreak.platform.location.LocationProvider
+import com.takeabreak.platform.network.AndroidNetworkMonitor
+import com.takeabreak.platform.notifications.AndroidNotifier
+import com.takeabreak.platform.notifications.Notifier
+import com.takeabreak.platform.usage.AndroidUsageEventsReader
+import com.takeabreak.platform.usage.UsageEventsReader
+import com.takeabreak.platform.workers.WorkScheduler
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.create
+
+// Inyección manual: cada dependencia se crea una sola vez, cuando se necesita
+class AppContainer(context: Context) {
+
+    private val appContext = context.applicationContext
+
+    private val database by lazy {
+        Room.databaseBuilder(appContext, AppDatabase::class.java, "takeabreak.db").build()
+    }
+
+    private val api: TakeABreakApi by lazy {
+        val json = Json { ignoreUnknownKeys = true }
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.BASE_URL)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+            .create()
+    }
+
+    // Repositorios
+    val settings: SettingsRepository by lazy { SettingsDataStore(appContext) }
+    private val breakRepository: BreakRepository by lazy { BreakRepositoryImpl(database.breakDao()) }
+    private val rewardRepository: RewardRepository by lazy { RewardRepositoryImpl(api, database.catalogDao(), settings) }
+    private val redemptionRepository: RedemptionRepository by lazy {
+        RedemptionRepositoryImpl(api, database.redemptionDao()) { WorkScheduler.syncRedemptions(appContext) }
+    }
+
+    // Plataforma
+    val networkMonitor: NetworkMonitor by lazy { AndroidNetworkMonitor(appContext) }
+    val usageEventsReader: UsageEventsReader by lazy { AndroidUsageEventsReader(appContext) }
+    val notifier: Notifier by lazy { AndroidNotifier(appContext) }
+    val locationProvider: LocationProvider by lazy { FusedLocationProvider(appContext) }
+
+    // Casos de uso
+    val syncBreaks by lazy { SyncBreaks(breakRepository, settings) }
+    val getHomeSummary by lazy { GetHomeSummary(breakRepository, redemptionRepository, rewardRepository, settings) }
+    val getRewards by lazy { GetRewards(rewardRepository) }
+    val redeemReward by lazy { RedeemReward(redemptionRepository) }
+    val setGoal by lazy { SetGoal(settings) }
+    val getBreakHistory by lazy { GetBreakHistory(breakRepository) }
+    val getRedemptions by lazy { GetRedemptions(redemptionRepository) }
+}
+
+val Context.appContainer: AppContainer
+    get() = (applicationContext as TakeABreakApp).container
+
+// Atajo para las factories de los ViewModels
+val CreationExtras.appContainer: AppContainer
+    get() = (this[APPLICATION_KEY] as TakeABreakApp).container
