@@ -1,6 +1,7 @@
 package com.takeabreak.data.local
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -16,7 +17,7 @@ import java.time.temporal.ChronoUnit
 // Un solo DataStore por archivo: SessionStore usa este mismo
 internal val Context.dataStore by preferencesDataStore(name = "settings")
 
-// Lo que no es una tabla. El token de sesión va cifrado en SessionStore. TODO: flag de notificaciones
+// Lo que no es una tabla. El token de sesión va cifrado en SessionStore
 class SettingsDataStore(context: Context) : SettingsRepository {
 
     private val store = context.dataStore
@@ -24,9 +25,18 @@ class SettingsDataStore(context: Context) : SettingsRepository {
     override val goalRewardId: Flow<String?> = store.data.map { it[GOAL_REWARD_ID] }
     override val dailyGoal: Flow<Int> = store.data.map { it[DAILY_GOAL] ?: DEFAULT_DAILY_GOAL }
     override val lastCatalogSync: Flow<Instant?> = store.data.map { prefs -> prefs[LAST_CATALOG_SYNC]?.let(Instant::ofEpochMilli) }
+    override val notificationsEnabled: Flow<Boolean> = store.data.map { it[NOTIFICATIONS_ENABLED] ?: true }
 
     override suspend fun setGoal(rewardId: String) {
         store.edit { it[GOAL_REWARD_ID] = rewardId }
+    }
+
+    override suspend fun setDailyGoal(minutes: Int) {
+        store.edit { it[DAILY_GOAL] = minutes }
+    }
+
+    override suspend fun setNotificationsEnabled(enabled: Boolean) {
+        store.edit { it[NOTIFICATIONS_ENABLED] = enabled }
     }
 
     override suspend fun saveCatalogSync(at: Instant) {
@@ -47,5 +57,6 @@ class SettingsDataStore(context: Context) : SettingsRepository {
         val DAILY_GOAL = intPreferencesKey("daily_goal")
         val LAST_CATALOG_SYNC = longPreferencesKey("last_catalog_sync")
         val CHECKPOINT = longPreferencesKey("events_checkpoint")
+        val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
     }
 }

@@ -8,7 +8,12 @@ interface SettingsRepository {
     val dailyGoal: Flow<Int>
     val lastCatalogSync: Flow<Instant?>
 
+    // Interruptor de Perfil: apagado no se avisa, pero las pausas se siguen sumando
+    val notificationsEnabled: Flow<Boolean>
+
     suspend fun setGoal(rewardId: String)
+    suspend fun setDailyGoal(minutes: Int)
+    suspend fun setNotificationsEnabled(enabled: Boolean)
     suspend fun saveCatalogSync(at: Instant)
 
     // Hasta dónde ya se leyeron los eventos de pantalla
