@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,17 +18,15 @@ import com.takeabreak.R
 import com.takeabreak.presentation.home.HomeViewModel
 import com.takeabreak.ui.components.StateContent
 
-// TODO: tarjeta de saldo con anillo, tarjeta de meta y filas de premio (frames 08 a 12)
+// TODO: tarjeta de saldo con anillo, tarjeta de meta y filas de premio (frames 08 a 12). El avatar va en la barra de AppNavHost
 @Composable
 fun HomeScreen(
     onRewardClick: (String) -> Unit,
-    onProfileClick: () -> Unit,
     viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Column(Modifier.fillMaxSize()) {
-        TextButton(onClick = onProfileClick) { Text(stringResource(R.string.profile)) }
         StateContent(state, emptyText = stringResource(R.string.home_empty)) { summary ->
             Column(Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(stringResource(R.string.points, summary.balance), style = MaterialTheme.typography.displayMedium)
