@@ -50,10 +50,51 @@
     <string name="access_error_no_connection">Sin conexión. Conectate a internet para entrar.</string>
 
     <string name="offline_banner">Sin conexión · tus pausas se siguen contando</string>
-    <string name="error_generic">Algo salió mal.</string>
+    <string name="error_generic">Algo salió mal</string>
+    <string name="error_generic_body">No es por algo que hayas hecho. Probá de nuevo en un rato.</string>
+    <string name="error_offline_title">Sin conexión</string>
+    <string name="error_offline_body">Lo que ya está guardado sigue disponible y tus pausas se siguen contando. Conectate y reintentá.</string>
+    <string name="error_permission_title">Falta un permiso</string>
+    <string name="error_permission_body">Activalo en Ajustes para usar esta parte de la app.</string>
     <string name="retry">Reintentar</string>
+    <string name="open_settings">Ir a Ajustes</string>
+    <string name="continue_offline">Seguir sin conexión</string>
+
+    <string name="profile_back">Volver</string>
+    <string name="profile_open">Abrir Perfil</string>
+    <string name="profile_total">Total histórico</string>
+    <string name="profile_redemptions_count">Canjes</string>
+    <plurals name="profile_active">
+        <item quantity="one">%1$d activo</item>
+        <item quantity="other">%1$d activos</item>
+    </plurals>
+    <string name="profile_goal">Mi meta</string>
+    <string name="profile_goal_none">Elegir</string>
+    <string name="profile_goal_pick">Elegí tu meta</string>
+    <string name="profile_goal_empty">Todavía no hay premios guardados. Conectate y abrí Explorar.</string>
+    <string name="profile_daily_goal">Meta diaria</string>
+    <string name="profile_notifications">Notificaciones</string>
+    <string name="profile_notifications_hint">Si las apagás, tus pausas se siguen sumando igual.</string>
+    <string name="profile_permissions">Permisos</string>
+    <string name="permission_usage">Acceso a uso</string>
+    <string name="permission_notifications">Avisos del sistema</string>
+    <string name="permission_location">Ubicación</string>
+    <string name="permission_granted">Activo</string>
+    <string name="permission_denied">Desactivado</string>
+    <string name="profile_sign_out">Cerrar sesión</string>
+    <string name="profile_sign_out_title">¿Cerrar sesión?</string>
+    <string name="profile_sign_out_body">Tus pausas y tus canjes quedan guardados en este teléfono. Para canjear vas a tener que volver a entrar.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="minutes">%1$d min</string>
+    <string name="hours">%1$d h</string>
+    <string name="hours_minutes">%1$d h %2$d min</string>
+
+    <string name="permissions_title">Dos permisos y listo.</string>
+    <string name="permissions_body">Con el acceso a uso vemos cuándo se bloquea y desbloquea la pantalla, nunca qué apps usás. Sin él no podemos contar tus pausas.</string>
+    <string name="permissions_grant">Dar acceso a uso</string>
 
     <string name="notification_channel">Pausas y canjes</string>
     <string name="notification_break_validated">Break validado: +%1$d pts</string>
+    <string name="notification_goal_reached">. Ya te alcanza para %1$s</string>
     <string name="notification_redemption_confirmed">Tu canje se confirmó. Ya podés mostrar el código.</string>
 </resources>

@@ -36,7 +36,7 @@ fun RedeemScreen(
         return
     }
 
-    StateContent(state, emptyText = "", onRetry = viewModel::confirm) { redemption ->
+    StateContent(state, emptyText = "", onRetry = viewModel::confirm, onContinueOffline = onDone) { redemption ->
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (redemption.status == RedemptionStatus.PENDING) {
                 Text(stringResource(R.string.redeem_pending))

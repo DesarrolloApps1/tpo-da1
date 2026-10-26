@@ -21,16 +21,20 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Deep link desde la notificación al premio -->
+            <!-- Deep links de las notificaciones: takeabreak://home, takeabreak://reward/{id} y takeabreak://redemptions -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="takeabreak" android:host="reward" />
+                <data android:scheme="takeabreak" />
+                <data android:host="home" />
+                <data android:host="reward" />
+                <data android:host="redemptions" />
             </intent-filter>
         </activity>
     </application>

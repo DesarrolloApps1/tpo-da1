@@ -5,6 +5,7 @@ import com.takeabreak.data.remote.EmailAuthRequest
 import com.takeabreak.data.remote.GoogleAuthRequest
 import com.takeabreak.data.remote.SessionDto
 import com.takeabreak.data.remote.TakeABreakApi
+import com.takeabreak.domain.model.Account
 import com.takeabreak.domain.model.AuthError
 import com.takeabreak.domain.model.AuthResult
 import com.takeabreak.domain.repository.AuthRepository
@@ -21,17 +22,20 @@ class AuthRepositoryImpl(
 
     override val isSignedIn: Flow<Boolean> = session.token.map { it != null }
 
-    override suspend fun signInWithGoogle(idToken: String): AuthResult =
-        signIn(onUnauthorized = AuthError.GOOGLE_FAILED) { api.signInWithGoogle(GoogleAuthRequest(idToken)) }
+    override val account: Flow<Account?> = session.account
 
+    override suspend fun signInWithGoogle(idToken: String, account: Account?): AuthResult =
+        signIn(AuthError.GOOGLE_FAILED, account) { api.signInWithGoogle(GoogleAuthRequest(idToken)) }
+
+    // Con email el backend no devuelve más datos: la cuenta es solo el email
     override suspend fun signInWithEmail(email: String, password: String, register: Boolean): AuthResult =
-        signIn(onUnauthorized = AuthError.WRONG_CREDENTIALS) { api.signInWithEmail(EmailAuthRequest(email, password, register)) }
+        signIn(AuthError.WRONG_CREDENTIALS, Account(email)) { api.signInWithEmail(EmailAuthRequest(email, password, register)) }
 
     override suspend fun signOut() = session.clear()
 
     // Traduce los códigos HTTP del backend a errores del dominio
-    private suspend fun signIn(onUnauthorized: AuthError, call: suspend () -> SessionDto): AuthResult = try {
-        session.save(call().token)
+    private suspend fun signIn(onUnauthorized: AuthError, account: Account?, call: suspend () -> SessionDto): AuthResult = try {
+        session.save(call().token, account)
         AuthResult.Success
     } catch (e: CancellationException) {
         throw e

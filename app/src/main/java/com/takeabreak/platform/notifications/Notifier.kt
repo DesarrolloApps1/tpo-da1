@@ -16,10 +16,13 @@ import com.takeabreak.MainActivity
 import com.takeabreak.R
 import com.takeabreak.domain.model.BreakSession
 import com.takeabreak.domain.model.Redemption
+import com.takeabreak.domain.model.Reward
+import com.takeabreak.ui.navigation.DeepLinks
 
 interface Notifier {
-    fun breakValidated(session: BreakSession)
-    fun redemptionConfirmed(redemption: Redemption)
+    // reachedGoal: el premio meta si el saldo ya alcanza, para abrirlo directo
+    suspend fun breakValidated(session: BreakSession, reachedGoal: Reward? = null)
+    suspend fun redemptionConfirmed(redemption: Redemption)
 }
 
 class AndroidNotifier(private val context: Context) : Notifier {
@@ -29,21 +32,24 @@ class AndroidNotifier(private val context: Context) : Notifier {
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
-    override fun breakValidated(session: BreakSession) = show(
+    override suspend fun breakValidated(session: BreakSession, reachedGoal: Reward?) = show(
         id = session.start.hashCode(),
-        text = context.getString(R.string.notification_break_validated, session.points),
-        intent = Intent(context, MainActivity::class.java),
+        text = context.getString(R.string.notification_break_validated, session.points) +
+            reachedGoal?.let { context.getString(R.string.notification_goal_reached, it.title) }.orEmpty(),
+        deepLink = DeepLinks.afterBreak(reachedGoal?.id),
     )
 
-    // Abre el premio canjeado con el deep link
-    override fun redemptionConfirmed(redemption: Redemption) = show(
+    // El código queda arriba de todo en Mis canjes, que es la pantalla que lo muestra
+    override suspend fun redemptionConfirmed(redemption: Redemption) = show(
         id = redemption.id.hashCode(),
         text = context.getString(R.string.notification_redemption_confirmed),
-        intent = Intent(Intent.ACTION_VIEW, "$DEEP_LINK_REWARD/${redemption.rewardId}".toUri(), context, MainActivity::class.java),
+        deepLink = DeepLinks.REDEMPTIONS,
     )
 
-    private fun show(id: Int, text: String, intent: Intent) {
+    // Intent explícito a MainActivity (singleTop): con la app abierta llega a onNewIntent y no se crea otra
+    private fun show(id: Int, text: String, deepLink: String) {
         if (!canNotify()) return
+        val intent = Intent(Intent.ACTION_VIEW, deepLink.toUri(), context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
@@ -60,8 +66,7 @@ class AndroidNotifier(private val context: Context) : Notifier {
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
 
-    companion object {
-        const val DEEP_LINK_REWARD = "takeabreak://reward"
-        private const val CHANNEL_ID = "breaks"
+    private companion object {
+        const val CHANNEL_ID = "breaks"
     }
 }

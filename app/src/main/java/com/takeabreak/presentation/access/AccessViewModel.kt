@@ -49,7 +49,7 @@ class AccessViewModel(
         if (!_state.value.googleEnabled) return
         attempt {
             when (val result = google.requestIdToken()) {
-                is GoogleIdTokenResult.Token -> signInWithGoogle(result.idToken)
+                is GoogleIdTokenResult.Token -> signInWithGoogle(result.idToken, result.account)
                 GoogleIdTokenResult.Cancelled -> null
                 GoogleIdTokenResult.Failed -> AuthResult.Failure(AuthError.GOOGLE_FAILED)
             }

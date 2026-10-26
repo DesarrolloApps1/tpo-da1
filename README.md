@@ -45,6 +45,22 @@ com.takeabreak
 
 `BreakSyncWorker` corre cada 15 minutos: lee los eventos de bloqueo, `SyncBreaks` valida y guarda las pausas y, si sumaron, avisa con una notificación. Cada pausa se identifica por su hora de inicio, así que guardarla dos veces no la duplica.
 
+### Navegación
+
+Flujo de Figma: onboarding → acceso → permisos → pestañas (Inicio, Explorar, Actividad) + Perfil, que se abre desde el avatar de Inicio. `AppNavHost` decide el destino inicial según la sesión (con sesión arranca en Inicio, o en Permisos si falta el acceso a uso) y ningún atrás vuelve al onboarding ni al acceso después de entrar. Las pestañas guardan y recuperan su pila. El aviso offline lo dibuja el scaffold para todas las pantallas.
+
+Deep links (los usan las notificaciones; se prueban con `adb shell am start -a android.intent.action.VIEW -d "<uri>" com.takeabreak`):
+
+| URI | Abre |
+|---|---|
+| `takeabreak://home` | Inicio (pausa validada) |
+| `takeabreak://reward/{id}` | Detalle del premio (pausa validada que ya alcanza para la meta) |
+| `takeabreak://redemptions` | Mis canjes, con el código recién confirmado arriba |
+
+`MainActivity` es `singleTop`: con la app en segundo plano el link llega por `onNewIntent` y se apila sobre Inicio; con la app cerrada lo resuelve Navigation y deja Inicio debajo.
+
+Cerrar sesión borra el token y los datos de la cuenta, pero no las pausas ni los canjes locales: el saldo es pausas − canjes no devueltos, así que borrar los canjes inflaría el saldo al volver a entrar.
+
 ## Estado
 
 Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio está marcada con `TODO("...")`:
@@ -57,6 +73,8 @@ Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio
 | Racha de días | `domain/usecase/GetHomeSummary.kt` | US-02 (#4) |
 | Canje online y pendiente sin red | `data/repository/RedemptionRepositoryImpl.kt` | US-04 (#6) |
 | Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
+| Pantalla de permisos (06 y 07) | `ui/screens/PermissionsScreen.kt` | US-05 (#7) |
+| Botón "Mostrar" en Mis canjes | `ui/screens/RedemptionsScreen.kt` | US-04 (#6) |
 | Maps y ubicación | `ui/screens/ExploreScreen.kt` | US-06 (#8) |
 
 El backlog completo está en el repo `docs`, carpeta `backlog/`, y en el tablero *DA1 | Board*.

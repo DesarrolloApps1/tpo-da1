@@ -1,9 +1,11 @@
 package com.takeabreak.domain.usecase
 
 import app.cash.turbine.test
+import com.takeabreak.domain.model.Account
 import com.takeabreak.domain.model.AuthError
 import com.takeabreak.domain.model.AuthResult
 import com.takeabreak.testing.FakeAuthRepository
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -50,6 +52,32 @@ class AuthUseCasesTest {
 
         assertEquals(AuthResult.Success, result)
         assertEquals(listOf("google-id-token"), repository.googleTokens)
+    }
+
+    @Test
+    fun `google guarda nombre y foto y email guarda solo el email`() = runTest {
+        val google = Account("ana@gmail.com", "Ana Paz", "https://foto")
+        SignInWithGoogle(repository)("google-id-token", google)
+        assertEquals(google, GetAccount(repository)().first())
+
+        SignInWithEmail(repository)("beto@mail.com", "secreta123", register = false)
+        assertEquals(Account("beto@mail.com"), GetAccount(repository)().first())
+    }
+
+    @Test
+    fun `cerrar sesion borra la cuenta`() = runTest {
+        SignInWithEmail(repository)("ana@mail.com", "secreta123", register = false)
+
+        SignOut(repository)()
+
+        assertEquals(null, GetAccount(repository)().first())
+    }
+
+    @Test
+    fun `el nombre visible sale del email si no hay nombre`() {
+        assertEquals("ana.paz", Account("ana.paz@mail.com").displayName)
+        assertEquals("A", Account("ana.paz@mail.com").initial)
+        assertEquals("Martina", Account("m@mail.com", name = "Martina").displayName)
     }
 
     @Test
