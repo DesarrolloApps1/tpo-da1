@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, tst, main]
+  push:
+    branches: [dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compilar y testear
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # Misma versión que el JBR de Android Studio
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar y correr los tests unitarios
+        run: ./gradlew assembleDebug testDebugUnitTest --console=plain
+
+      - name: Subir reportes de tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-tests
+          path: app/build/reports/tests/
