@@ -7,6 +7,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GoogleAuthRequest(val idToken: String)
 
+// register = true crea la cuenta; false ingresa con una existente
+@Serializable
+data class EmailAuthRequest(val email: String, val password: String, val register: Boolean)
+
 @Serializable
 data class SessionDto(val token: String)
 

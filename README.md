@@ -10,6 +10,18 @@ Documentación y diseño: [DesarrolloApps1/docs](https://github.com/DesarrolloAp
 2. Levantar el backend local (ver su README). En debug la app apunta a `http://10.0.2.2:8080/`, que es la PC vista desde el emulador.
 3. Correr la configuración `app` en un emulador o teléfono con Android 9 (API 28) o superior.
 
+### Acceso con Google
+
+El botón "Continuar con Google" necesita el client ID **web** de Google Cloud en `local.properties` (no se sube al repo):
+
+```properties
+GOOGLE_WEB_CLIENT_ID=1234567890-abc.apps.googleusercontent.com
+```
+
+Es el mismo valor que el backend recibe en `GOOGLE_CLIENT_ID`. En el mismo proyecto de Google Cloud tiene que existir también un client ID de tipo Android con el paquete `com.takeabreak` y el SHA-1 del keystore de debug (`./gradlew signingReport`). Sin la clave la app compila y corre igual: el botón de Google queda deshabilitado y se entra con email.
+
+El token de sesión se guarda cifrado con AES-GCM y una clave del Android Keystore; en DataStore solo queda el texto cifrado. `AuthInterceptor` lo agrega como `Authorization: Bearer` y, si el backend responde 401, borra la sesión y la app vuelve a la pantalla de acceso. Las pausas y el historial no dependen de la sesión.
+
 Desde consola:
 
 ```bash
@@ -46,7 +58,6 @@ Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio
 | Canje online y pendiente sin red | `data/repository/RedemptionRepositoryImpl.kt` | US-04 (#6) |
 | Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
 | Maps y ubicación | `ui/screens/ExploreScreen.kt` | US-06 (#8) |
-| Acceso con Google o email, token cifrado | ver `TODO` en cada pantalla | US-07 (#9) |
 
 El backlog completo está en el repo `docs`, carpeta `backlog/`, y en el tablero *DA1 | Board*.
 

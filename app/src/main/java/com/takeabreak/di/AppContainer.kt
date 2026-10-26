@@ -7,12 +7,19 @@ import androidx.room.Room
 import com.takeabreak.BuildConfig
 import com.takeabreak.TakeABreakApp
 import com.takeabreak.data.local.AppDatabase
+import com.takeabreak.data.local.KeystoreTokenCipher
+import com.takeabreak.data.local.SessionStore
 import com.takeabreak.data.local.SettingsDataStore
+import com.takeabreak.data.local.dataStore
+import com.takeabreak.data.remote.AuthInterceptor
 import com.takeabreak.data.remote.TakeABreakApi
+import com.takeabreak.data.repository.AuthRepositoryImpl
 import com.takeabreak.data.repository.BreakRepositoryImpl
 import com.takeabreak.data.repository.RedemptionRepositoryImpl
 import com.takeabreak.data.repository.RewardRepositoryImpl
+import com.takeabreak.domain.repository.AuthRepository
 import com.takeabreak.domain.repository.BreakRepository
+import com.takeabreak.domain.repository.GoogleIdTokenProvider
 import com.takeabreak.domain.repository.NetworkMonitor
 import com.takeabreak.domain.repository.RedemptionRepository
 import com.takeabreak.domain.repository.RewardRepository
@@ -21,9 +28,14 @@ import com.takeabreak.domain.usecase.GetBreakHistory
 import com.takeabreak.domain.usecase.GetHomeSummary
 import com.takeabreak.domain.usecase.GetRedemptions
 import com.takeabreak.domain.usecase.GetRewards
+import com.takeabreak.domain.usecase.ObserveSession
 import com.takeabreak.domain.usecase.RedeemReward
 import com.takeabreak.domain.usecase.SetGoal
+import com.takeabreak.domain.usecase.SignInWithEmail
+import com.takeabreak.domain.usecase.SignInWithGoogle
+import com.takeabreak.domain.usecase.SignOut
 import com.takeabreak.domain.usecase.SyncBreaks
+import com.takeabreak.platform.auth.CredentialManagerGoogleProvider
 import com.takeabreak.platform.location.FusedLocationProvider
 import com.takeabreak.platform.location.LocationProvider
 import com.takeabreak.platform.network.AndroidNetworkMonitor
@@ -34,6 +46,7 @@ import com.takeabreak.platform.usage.UsageEventsReader
 import com.takeabreak.platform.workers.WorkScheduler
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
@@ -47,10 +60,14 @@ class AppContainer(context: Context) {
         Room.databaseBuilder(appContext, AppDatabase::class.java, "takeabreak.db").build()
     }
 
+    private val sessionStore by lazy { SessionStore(appContext.dataStore, KeystoreTokenCipher()) }
+
     private val api: TakeABreakApi by lazy {
         val json = Json { ignoreUnknownKeys = true }
+        val client = OkHttpClient.Builder().addInterceptor(AuthInterceptor(sessionStore)).build()
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)
+            .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
             .create()
@@ -64,11 +81,20 @@ class AppContainer(context: Context) {
         RedemptionRepositoryImpl(api, database.redemptionDao()) { WorkScheduler.syncRedemptions(appContext) }
     }
 
+    private val authRepository: AuthRepository by lazy { AuthRepositoryImpl(api, sessionStore) }
+
     // Plataforma
     val networkMonitor: NetworkMonitor by lazy { AndroidNetworkMonitor(appContext) }
     val usageEventsReader: UsageEventsReader by lazy { AndroidUsageEventsReader(appContext) }
     val notifier: Notifier by lazy { AndroidNotifier(appContext) }
     val locationProvider: LocationProvider by lazy { FusedLocationProvider(appContext) }
+
+    // Sin client ID en local.properties el botón de Google queda deshabilitado
+    val isGoogleSignInEnabled: Boolean = BuildConfig.GOOGLE_WEB_CLIENT_ID.isNotBlank()
+
+    // No se guarda: necesita la Activity actual
+    fun googleIdTokenProvider(activityContext: Context): GoogleIdTokenProvider =
+        CredentialManagerGoogleProvider(activityContext, BuildConfig.GOOGLE_WEB_CLIENT_ID)
 
     // Casos de uso
     val syncBreaks by lazy { SyncBreaks(breakRepository, settings) }
@@ -78,6 +104,10 @@ class AppContainer(context: Context) {
     val setGoal by lazy { SetGoal(settings) }
     val getBreakHistory by lazy { GetBreakHistory(breakRepository) }
     val getRedemptions by lazy { GetRedemptions(redemptionRepository) }
+    val signInWithGoogle by lazy { SignInWithGoogle(authRepository) }
+    val signInWithEmail by lazy { SignInWithEmail(authRepository) }
+    val signOut by lazy { SignOut(authRepository) }
+    val observeSession by lazy { ObserveSession(authRepository) }
 }
 
 val Context.appContainer: AppContainer
