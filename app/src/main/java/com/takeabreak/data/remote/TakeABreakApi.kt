@@ -6,10 +6,13 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-// Los cuatro endpoints del backend del equipo
+// Los endpoints del backend del equipo. Los de canjes exigen el token (lo agrega AuthInterceptor)
 interface TakeABreakApi {
     @POST("auth/google")
     suspend fun signInWithGoogle(@Body body: GoogleAuthRequest): SessionDto
+
+    @POST("auth/email")
+    suspend fun signInWithEmail(@Body body: EmailAuthRequest): SessionDto
 
     @GET("rewards")
     suspend fun rewards(@Query("since") since: Long?): CatalogDto
