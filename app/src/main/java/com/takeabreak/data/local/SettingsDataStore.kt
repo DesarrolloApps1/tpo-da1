@@ -13,9 +13,10 @@ import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-private val Context.dataStore by preferencesDataStore(name = "settings")
+// Un solo DataStore por archivo: SessionStore usa este mismo
+internal val Context.dataStore by preferencesDataStore(name = "settings")
 
-// Lo que no es una tabla. TODO: flag de notificaciones y token de sesión cifrado con Keystore
+// Lo que no es una tabla. El token de sesión va cifrado en SessionStore. TODO: flag de notificaciones
 class SettingsDataStore(context: Context) : SettingsRepository {
 
     private val store = context.dataStore
