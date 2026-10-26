@@ -24,6 +24,31 @@
     <string name="onboarding_title">1 hora = 1 recompensa</string>
     <string name="continue_label">Continuar</string>
 
+    <string name="access_logo">take a break</string>
+    <string name="access_headline">Tu tiempo lejos del celu</string>
+    <string name="access_headline_accent">vale.</string>
+    <string name="access_subtitle">Entrás una vez y listo: el resto pasa solo.</string>
+    <string name="access_title">Entrá en un toque</string>
+    <string name="access_google">Continuar con Google</string>
+    <string name="access_email">Continuar con email</string>
+    <string name="access_google_icon">Logo de Google</string>
+    <string name="access_email_icon">Sobre de email</string>
+    <string name="access_google_disabled">El acceso con Google no está disponible en esta versión. Entrá con tu email.</string>
+    <string name="access_legal">Al continuar aceptás los Términos y la Política de privacidad.</string>
+    <string name="access_email_label">Email</string>
+    <string name="access_password_label">Contraseña</string>
+    <string name="access_password_hint">Mínimo %1$d caracteres</string>
+    <string name="access_register">Crear cuenta</string>
+    <string name="access_sign_in">Ingresar</string>
+    <string name="access_back">Volver</string>
+    <string name="access_loading">Entrando…</string>
+    <string name="access_error_invalid_email">Revisá el email: no tiene un formato válido.</string>
+    <string name="access_error_short_password">La contraseña tiene que tener al menos %1$d caracteres.</string>
+    <string name="access_error_email_taken">Ya existe una cuenta con ese email. Tocá Ingresar.</string>
+    <string name="access_error_wrong_credentials">El email o la contraseña no coinciden.</string>
+    <string name="access_error_google">No pudimos entrar con Google. Probá de nuevo o usá tu email.</string>
+    <string name="access_error_no_connection">Sin conexión. Conectate a internet para entrar.</string>
+
     <string name="offline_banner">Sin conexión · tus pausas se siguen contando</string>
     <string name="error_generic">Algo salió mal.</string>
     <string name="retry">Reintentar</string>

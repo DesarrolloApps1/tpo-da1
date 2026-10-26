@@ -2,9 +2,10 @@ package com.takeabreak.ui.navigation
 
 import kotlinx.serialization.Serializable
 
-// Destinos de la app: tres pestañas, detalle, canje, perfil y primer uso
+// Destinos de la app: tres pestañas, detalle, canje, perfil, primer uso y acceso
 sealed interface Route {
     @Serializable data object Onboarding : Route
+    @Serializable data object Access : Route
     @Serializable data object Home : Route
     @Serializable data object Explore : Route
     @Serializable data object Activity : Route
