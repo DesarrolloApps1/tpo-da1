@@ -21,6 +21,10 @@ object Palette {
     val Line = Color(0xFFE7E1D6)
     val Red = Color(0xFFC2412D)
     val Amber = Color(0xFFC98A12)
+    val AmberBg = Color(0xFFFFF3D6)
+    val SandInk = Color(0xFF6B4A0E)
+    val Pink = Color(0xFFFFD3F2)
+    val PinkInk = Color(0xFF6A1B54)
 }
 
 private val colors = lightColorScheme(

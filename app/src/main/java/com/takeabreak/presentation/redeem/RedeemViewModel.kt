@@ -11,6 +11,7 @@ import com.takeabreak.domain.usecase.GetRewards
 import com.takeabreak.domain.usecase.RedeemReward
 import com.takeabreak.presentation.ScreenState
 import com.takeabreak.presentation.UiState
+import com.takeabreak.presentation.toErrorCause
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,7 +34,7 @@ class RedeemViewModel(
             val reward = getRewards().first().first { it.id == rewardId }
             _state.value = redeemReward(reward).fold(
                 onSuccess = { ScreenState(UiState.Content(it)) },
-                onFailure = { ScreenState(UiState.Error(it.message)) },
+                onFailure = { ScreenState(UiState.Error(it.toErrorCause())) },
             )
         }
     }
