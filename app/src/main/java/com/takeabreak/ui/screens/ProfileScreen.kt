@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
@@ -262,7 +263,7 @@ private fun SettingRow(
         Icon(icon, contentDescription = null, tint = tint)
         Text(label, Modifier.weight(1f), fontWeight = FontWeight.SemiBold, color = if (showChevron) Color.Unspecified else tint)
         value?.let {
-            Text(it, Modifier.weight(1f, fill = false), color = valueColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(it, Modifier.widthIn(max = 160.dp), color = valueColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         if (showChevron) Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Palette.Muted)
     }

@@ -80,7 +80,7 @@
     <string name="permission_notifications">Avisos del sistema</string>
     <string name="permission_location">Ubicación</string>
     <string name="permission_granted">Activo</string>
-    <string name="permission_denied">Desactivado · tocá para activar</string>
+    <string name="permission_denied">Desactivado</string>
     <string name="profile_sign_out">Cerrar sesión</string>
     <string name="profile_sign_out_title">¿Cerrar sesión?</string>
     <string name="profile_sign_out_body">Tus pausas y tus canjes quedan guardados en este teléfono. Para canjear vas a tener que volver a entrar.</string>
