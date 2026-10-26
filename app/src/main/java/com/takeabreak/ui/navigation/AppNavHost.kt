@@ -26,7 +26,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import com.takeabreak.R
-import com.takeabreak.platform.notifications.AndroidNotifier
 import com.takeabreak.ui.screens.AccessScreen
 import com.takeabreak.ui.screens.ActivityScreen
 import com.takeabreak.ui.screens.ExploreScreen
@@ -88,7 +87,7 @@ fun AppNavHost(signedIn: Flow<Boolean>, navController: NavHostController = remem
             }
             composable<Route.Activity> { ActivityScreen() }
             composable<Route.RewardDetail>(
-                deepLinks = listOf(navDeepLink<Route.RewardDetail>(basePath = AndroidNotifier.DEEP_LINK_REWARD)),
+                deepLinks = listOf(navDeepLink<Route.RewardDetail>(basePath = DeepLinks.REWARD)),
             ) {
                 RewardDetailScreen(onRedeem = { navController.navigate(Route.Redeem(it)) })
             }

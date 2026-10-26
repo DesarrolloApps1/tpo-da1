@@ -41,6 +41,7 @@ import com.takeabreak.platform.location.LocationProvider
 import com.takeabreak.platform.network.AndroidNetworkMonitor
 import com.takeabreak.platform.notifications.AndroidNotifier
 import com.takeabreak.platform.notifications.Notifier
+import com.takeabreak.platform.notifications.PreferenceGatedNotifier
 import com.takeabreak.platform.usage.AndroidUsageEventsReader
 import com.takeabreak.platform.usage.UsageEventsReader
 import com.takeabreak.platform.workers.WorkScheduler
@@ -86,7 +87,8 @@ class AppContainer(context: Context) {
     // Plataforma
     val networkMonitor: NetworkMonitor by lazy { AndroidNetworkMonitor(appContext) }
     val usageEventsReader: UsageEventsReader by lazy { AndroidUsageEventsReader(appContext) }
-    val notifier: Notifier by lazy { AndroidNotifier(appContext) }
+    // El interruptor de Perfil envuelve al notificador real
+    val notifier: Notifier by lazy { PreferenceGatedNotifier(AndroidNotifier(appContext), settings) }
     val locationProvider: LocationProvider by lazy { FusedLocationProvider(appContext) }
 
     // Sin client ID en local.properties el botón de Google queda deshabilitado

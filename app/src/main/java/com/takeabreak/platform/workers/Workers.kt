@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker.Result
 import androidx.work.WorkerParameters
 import com.takeabreak.di.appContainer
+import kotlinx.coroutines.flow.first
 import java.io.IOException
 
 // 1. lee los eventos, 2. valida y guarda, 3. avisa si sumó
@@ -12,9 +13,12 @@ class BreakSyncWorker(context: Context, params: WorkerParameters) : CoroutineWor
     override suspend fun doWork(): Result {
         val container = applicationContext.appContainer
         val pauses = container.usageEventsReader.closedPausesSince(container.settings.checkpoint())
-        container.syncBreaks(pauses)
-            .filter { it.points > 0 }
-            .forEach(container.notifier::breakValidated)
+        val earned = container.syncBreaks(pauses).filter { it.points > 0 }
+        if (earned.isEmpty()) return Result.success()
+        // Con las pausas ya guardadas, el saldo dice si ya alcanza para la meta
+        val summary = container.getHomeSummary().first()
+        val reachedGoal = summary.goal?.takeIf { summary.balance >= it.points }
+        earned.forEach { container.notifier.breakValidated(it, reachedGoal) }
         return Result.success()
     }
 }
