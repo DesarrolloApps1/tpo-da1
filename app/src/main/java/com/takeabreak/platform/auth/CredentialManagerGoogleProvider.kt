@@ -9,6 +9,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import com.takeabreak.domain.model.Account
 import com.takeabreak.domain.repository.GoogleIdTokenProvider
 import com.takeabreak.domain.repository.GoogleIdTokenResult
 
@@ -25,7 +26,9 @@ class CredentialManagerGoogleProvider(
         return try {
             val credential = CredentialManager.create(activityContext).getCredential(activityContext, request).credential
             if (credential is CustomCredential && credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                GoogleIdTokenResult.Token(GoogleIdTokenCredential.createFrom(credential.data).idToken)
+                val google = GoogleIdTokenCredential.createFrom(credential.data)
+                val account = google.email?.let { Account(email = it, name = google.displayName, photoUrl = google.profilePictureUri?.toString()) }
+                GoogleIdTokenResult.Token(google.idToken, account)
             } else {
                 GoogleIdTokenResult.Failed
             }

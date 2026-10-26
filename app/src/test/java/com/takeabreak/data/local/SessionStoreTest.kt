@@ -2,6 +2,7 @@ package com.takeabreak.data.local
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.takeabreak.domain.model.Account
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,12 +51,31 @@ class SessionStoreTest {
     }
 
     @Test
-    fun `cerrar sesion borra el token`() = runBlocking {
-        store.save("jwt-secreto")
+    fun `cerrar sesion borra el token y la cuenta`() = runBlocking {
+        store.save("jwt-secreto", Account("ana@mail.com", "Ana", "https://foto"))
 
         store.clear()
 
         assertNull(store.token.first())
+        assertNull(store.account.first())
+    }
+
+    @Test
+    fun `guarda la cuenta junto con el token`() = runBlocking {
+        val account = Account("ana@mail.com", "Ana", "https://foto")
+
+        store.save("jwt-secreto", account)
+
+        assertEquals(account, store.account.first())
+    }
+
+    @Test
+    fun `entrar con otra cuenta no deja datos de la anterior`() = runBlocking {
+        store.save("jwt-1", Account("ana@mail.com", "Ana", "https://foto"))
+
+        store.save("jwt-2", Account("beto@mail.com"))
+
+        assertEquals(Account("beto@mail.com"), store.account.first())
     }
 
     @Test

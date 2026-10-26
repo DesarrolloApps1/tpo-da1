@@ -1,5 +1,6 @@
 package com.takeabreak.testing
 
+import com.takeabreak.domain.model.Account
 import com.takeabreak.domain.model.AuthResult
 import com.takeabreak.domain.repository.AuthRepository
 import kotlinx.coroutines.CompletableDeferred
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.map
 class FakeAuthRepository : AuthRepository {
 
     val token = MutableStateFlow<String?>(null)
+    val savedAccount = MutableStateFlow<Account?>(null)
     var result: AuthResult = AuthResult.Success
     val emailCalls = mutableListOf<Triple<String, String, Boolean>>()
     val googleTokens = mutableListOf<String>()
@@ -19,24 +21,29 @@ class FakeAuthRepository : AuthRepository {
     var gate: CompletableDeferred<Unit>? = null
 
     override val isSignedIn: Flow<Boolean> = token.map { it != null }
+    override val account: Flow<Account?> = savedAccount
 
-    override suspend fun signInWithGoogle(idToken: String): AuthResult {
+    override suspend fun signInWithGoogle(idToken: String, account: Account?): AuthResult {
         googleTokens += idToken
-        return respond()
+        return respond(account)
     }
 
     override suspend fun signInWithEmail(email: String, password: String, register: Boolean): AuthResult {
         emailCalls += Triple(email, password, register)
-        return respond()
+        return respond(Account(email))
     }
 
     override suspend fun signOut() {
         token.value = null
+        savedAccount.value = null
     }
 
-    private suspend fun respond(): AuthResult {
+    private suspend fun respond(account: Account?): AuthResult {
         gate?.await()
-        if (result == AuthResult.Success) token.value = "session-token"
+        if (result == AuthResult.Success) {
+            token.value = "session-token"
+            savedAccount.value = account
+        }
         return result
     }
 }
