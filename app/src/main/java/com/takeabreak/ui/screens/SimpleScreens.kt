@@ -28,15 +28,3 @@ fun OnboardingScreen(onDone: () -> Unit) {
         PillButton(stringResource(R.string.continue_label), onClick = onDone)
     }
 }
-
-// TODO: datos de la cuenta, meta diaria y notificaciones (frame 25)
-@Composable
-fun ProfileScreen(onRedemptionsClick: () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        PillButton(stringResource(R.string.my_redemptions), onClick = onRedemptionsClick)
-    }
-}

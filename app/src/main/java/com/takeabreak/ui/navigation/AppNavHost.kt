@@ -92,7 +92,7 @@ fun AppNavHost(signedIn: Flow<Boolean>, navController: NavHostController = remem
                 RewardDetailScreen(onRedeem = { navController.navigate(Route.Redeem(it)) })
             }
             composable<Route.Redeem> { RedeemScreen(onDone = { navController.popBackStack(Route.Home, inclusive = false) }) }
-            composable<Route.Profile> { ProfileScreen(onRedemptionsClick = { navController.navigate(Route.Redemptions) }) }
+            composable<Route.Profile> { ProfileScreen(onBack = navController::navigateUp, onRedemptionsClick = { navController.navigate(Route.Redemptions) }) }
             composable<Route.Redemptions> { RedemptionsScreen() }
         }
     }

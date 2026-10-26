@@ -21,16 +21,20 @@ import com.takeabreak.domain.repository.AuthRepository
 import com.takeabreak.domain.repository.BreakRepository
 import com.takeabreak.domain.repository.GoogleIdTokenProvider
 import com.takeabreak.domain.repository.NetworkMonitor
+import com.takeabreak.domain.repository.PermissionChecker
 import com.takeabreak.domain.repository.RedemptionRepository
 import com.takeabreak.domain.repository.RewardRepository
 import com.takeabreak.domain.repository.SettingsRepository
+import com.takeabreak.domain.usecase.GetAccount
 import com.takeabreak.domain.usecase.GetBreakHistory
 import com.takeabreak.domain.usecase.GetHomeSummary
+import com.takeabreak.domain.usecase.GetProfile
 import com.takeabreak.domain.usecase.GetRedemptions
 import com.takeabreak.domain.usecase.GetRewards
 import com.takeabreak.domain.usecase.ObserveSession
 import com.takeabreak.domain.usecase.RedeemReward
 import com.takeabreak.domain.usecase.SetGoal
+import com.takeabreak.domain.usecase.SetNotificationsEnabled
 import com.takeabreak.domain.usecase.SignInWithEmail
 import com.takeabreak.domain.usecase.SignInWithGoogle
 import com.takeabreak.domain.usecase.SignOut
@@ -42,6 +46,7 @@ import com.takeabreak.platform.network.AndroidNetworkMonitor
 import com.takeabreak.platform.notifications.AndroidNotifier
 import com.takeabreak.platform.notifications.Notifier
 import com.takeabreak.platform.notifications.PreferenceGatedNotifier
+import com.takeabreak.platform.permissions.AndroidPermissionChecker
 import com.takeabreak.platform.usage.AndroidUsageEventsReader
 import com.takeabreak.platform.usage.UsageEventsReader
 import com.takeabreak.platform.workers.WorkScheduler
@@ -90,6 +95,7 @@ class AppContainer(context: Context) {
     // El interruptor de Perfil envuelve al notificador real
     val notifier: Notifier by lazy { PreferenceGatedNotifier(AndroidNotifier(appContext), settings) }
     val locationProvider: LocationProvider by lazy { FusedLocationProvider(appContext) }
+    val permissionChecker: PermissionChecker by lazy { AndroidPermissionChecker(appContext) }
 
     // Sin client ID en local.properties el botón de Google queda deshabilitado
     val isGoogleSignInEnabled: Boolean = BuildConfig.GOOGLE_WEB_CLIENT_ID.isNotBlank()
@@ -104,12 +110,15 @@ class AppContainer(context: Context) {
     val getRewards by lazy { GetRewards(rewardRepository) }
     val redeemReward by lazy { RedeemReward(redemptionRepository) }
     val setGoal by lazy { SetGoal(settings) }
+    val setNotificationsEnabled by lazy { SetNotificationsEnabled(settings) }
+    val getProfile by lazy { GetProfile(authRepository, breakRepository, redemptionRepository, rewardRepository, settings) }
     val getBreakHistory by lazy { GetBreakHistory(breakRepository) }
     val getRedemptions by lazy { GetRedemptions(redemptionRepository) }
     val signInWithGoogle by lazy { SignInWithGoogle(authRepository) }
     val signInWithEmail by lazy { SignInWithEmail(authRepository) }
     val signOut by lazy { SignOut(authRepository) }
     val observeSession by lazy { ObserveSession(authRepository) }
+    val getAccount by lazy { GetAccount(authRepository) }
 }
 
 val Context.appContainer: AppContainer
