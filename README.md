@@ -37,11 +37,19 @@ com.takeabreak
 
 Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio está marcada con `TODO("...")`:
 
-| Pendiente | Dónde |
-|---|---|
-| Armar pausas desde los eventos | `platform/usage/UsageEventsReader.kt` |
-| Minutos fuera del horario de descanso | `domain/model/Pause.kt` |
-| Validar y asignar estado a cada pausa | `domain/usecase/SyncBreaks.kt` |
-| Canje online y pendiente sin red | `data/repository/RedemptionRepositoryImpl.kt` |
-| Racha de días | `domain/usecase/GetHomeSummary.kt` |
-| Acceso con Google, Maps, token cifrado, fuentes | ver `TODO` en cada pantalla |
+| Pendiente | Dónde | Historia |
+|---|---|---|
+| Armar pausas desde los eventos | `platform/usage/UsageEventsReader.kt` | US-01 (#3) |
+| Minutos fuera del horario de descanso | `domain/model/Pause.kt` | US-01 (#3) |
+| Validar y asignar estado a cada pausa | `domain/usecase/SyncBreaks.kt` | US-01 (#3) |
+| Racha de días | `domain/usecase/GetHomeSummary.kt` | US-02 (#4) |
+| Canje online y pendiente sin red | `data/repository/RedemptionRepositoryImpl.kt` | US-04 (#6) |
+| Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
+| Maps y ubicación | `ui/screens/ExploreScreen.kt` | US-06 (#8) |
+| Acceso con Google o email, token cifrado | ver `TODO` en cada pantalla | US-07 (#9) |
+
+El backlog completo está en el repo `docs`, carpeta `backlog/`, y en el tablero *DA1 | Board*.
+
+## Forma de trabajo
+
+Cada tarea sale de `dev` en una rama `nombre/feature` y vuelve por PR a `dev`, con la plantilla de PR completa y el CI en verde. Commits chicos, en español y con prefijo (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`).
