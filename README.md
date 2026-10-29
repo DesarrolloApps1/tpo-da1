@@ -68,7 +68,6 @@ Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio
 | Pendiente | Dónde | Historia |
 |---|---|---|
 | Armar pausas desde los eventos | `platform/usage/UsageEventsReader.kt` | US-01 (#3) |
-| Validar y asignar estado a cada pausa | `domain/usecase/SyncBreaks.kt` | US-01 (#3) |
 | Racha de días | `domain/usecase/GetHomeSummary.kt` | US-02 (#4) |
 | Canje online y pendiente sin red | `data/repository/RedemptionRepositoryImpl.kt` | US-04 (#6) |
 | Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
