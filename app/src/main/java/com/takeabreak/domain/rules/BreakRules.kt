@@ -6,10 +6,13 @@ import com.takeabreak.domain.model.Pause
 object BreakRules {
     const val DAILY_CAP = 240
 
+    fun minMinutes(pause: Pause): Int = if (pause.isWeekend) 45 else 30
+
+    fun validMinutes(pause: Pause): Int = pause.minutesOutside(restFrom = 23, restTo = 9)
+
     fun points(pause: Pause, pointsToday: Int): Int {
-        val minMinutes = if (pause.isWeekend) 45 else 30
-        val countable = pause.minutesOutside(restFrom = 23, restTo = 9)
-        if (countable < minMinutes) return 0
-        return countable.coerceAtMost(DAILY_CAP - pointsToday)
+        val countable = validMinutes(pause)
+        if (countable < minMinutes(pause)) return 0
+        return countable.coerceAtMost(DAILY_CAP - pointsToday).coerceAtLeast(0)
     }
 }

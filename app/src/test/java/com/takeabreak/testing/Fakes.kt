@@ -42,9 +42,13 @@ class FakeSettingsRepository : SettingsRepository {
         lastCatalogSync.value = at
     }
 
-    override suspend fun checkpoint(): Instant = Instant.EPOCH
+    val savedCheckpoints = mutableListOf<Instant>()
 
-    override suspend fun saveCheckpoint(at: Instant) = Unit
+    override suspend fun checkpoint(): Instant = savedCheckpoints.lastOrNull() ?: Instant.EPOCH
+
+    override suspend fun saveCheckpoint(at: Instant) {
+        savedCheckpoints += at
+    }
 }
 
 class FakeBreakRepository : BreakRepository {
