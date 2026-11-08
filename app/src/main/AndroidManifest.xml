@@ -37,5 +37,14 @@
                 <data android:host="redemptions" />
             </intent-filter>
         </activity>
+
+        <!-- Anota los cambios de hora del sistema; TIME_SET es un broadcast protegido, ninguna app lo puede falsificar -->
+        <receiver
+            android:name=".platform.usage.ClockChangeReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
