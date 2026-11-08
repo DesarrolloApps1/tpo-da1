@@ -25,6 +25,7 @@ import com.takeabreak.domain.repository.PermissionChecker
 import com.takeabreak.domain.repository.RedemptionRepository
 import com.takeabreak.domain.repository.RewardRepository
 import com.takeabreak.domain.repository.SettingsRepository
+import com.takeabreak.domain.rules.BreakRules
 import com.takeabreak.domain.usecase.GetAccount
 import com.takeabreak.domain.usecase.GetBreakHistory
 import com.takeabreak.domain.usecase.GetHomeSummary
@@ -106,11 +107,13 @@ class AppContainer(context: Context) {
         CredentialManagerGoogleProvider(activityContext, BuildConfig.GOOGLE_WEB_CLIENT_ID)
 
     // Casos de uso
-    val syncBreaks by lazy { SyncBreaks(breakRepository, settings) }
+    // Una sola configuración de reglas para toda la app
+    val breakRules by lazy { BreakRules() }
+    val syncBreaks by lazy { SyncBreaks(breakRepository, settings, breakRules) }
     val getHomeSummary by lazy { GetHomeSummary(breakRepository, redemptionRepository, rewardRepository, settings) }
     val getRewards by lazy { GetRewards(rewardRepository) }
     val redeemReward by lazy { RedeemReward(redemptionRepository) }
-    val setGoal by lazy { SetGoal(settings) }
+    val setGoal by lazy { SetGoal(settings, breakRules) }
     val setNotificationsEnabled by lazy { SetNotificationsEnabled(settings) }
     val getProfile by lazy { GetProfile(authRepository, breakRepository, redemptionRepository, rewardRepository, settings) }
     val getBreakHistory by lazy { GetBreakHistory(breakRepository) }
