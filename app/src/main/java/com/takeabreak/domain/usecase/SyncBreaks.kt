@@ -14,16 +14,17 @@ import java.time.ZoneId
 class SyncBreaks(
     private val breaks: BreakRepository,
     private val settings: SettingsRepository,
+    private val rules: BreakRules = BreakRules(),
 ) {
     suspend operator fun invoke(pauses: List<Pause>): List<BreakSession> {
         if (pauses.isEmpty()) return emptyList()
         // Los puntos de cada día arrancan de lo ya guardado y suman las pausas de esta tanda, en orden
         val pointsByDay = mutableMapOf<LocalDate, Int>()
-        val sessions = pauses.filter(BreakRules::isRecorded).sortedBy { it.start }.map { pause ->
+        val sessions = pauses.filter(rules::isRecorded).sortedBy { it.start }.map { pause ->
             val day = pause.start.toLocalDate()
             val pointsToday = pointsByDay.getOrPut(day) { breaks.pointsOn(day) }
-            val validMinutes = BreakRules.validMinutes(pause)
-            val points = BreakRules.points(pause, pointsToday)
+            val validMinutes = rules.validMinutes(pause)
+            val points = rules.points(pause, pointsToday)
             pointsByDay[day] = pointsToday + points
             BreakSession(pause.start, pause.end, validMinutes, points, statusOf(pause, validMinutes, points))
         }
@@ -37,9 +38,10 @@ class SyncBreaks(
 
     // Motivo por el que la pausa sumó o no, en el orden en que se aplican las reglas
     private fun statusOf(pause: Pause, validMinutes: Int, points: Int): BreakStatus {
-        val minMinutes = BreakRules.minMinutes(pause)
+        val minMinutes = rules.minMinutes(pause)
         return when {
             pause.clockChanged -> BreakStatus.CLOCK_CHANGED
+            points > 0 && rules.isOverPauseCap(validMinutes) -> BreakStatus.PAUSE_CAP
             points > 0 -> BreakStatus.VALID
             validMinutes >= minMinutes -> BreakStatus.DAILY_CAP
             Duration.between(pause.start, pause.end).toMinutes() >= minMinutes -> BreakStatus.REST_TIME

@@ -143,4 +143,11 @@ class SyncBreaksTest {
 
         assertEquals(listOf(Triple(60, 0, BreakStatus.CLOCK_CHANGED)), syncBreaks(listOf(changed)).summary())
     }
+
+    @Test
+    fun `una pausa de mas de 3 horas suma el tope y queda con su motivo`() = runTest {
+        val saved = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T15:00")))
+
+        assertEquals(listOf(Triple(300, 180, BreakStatus.PAUSE_CAP)), saved.summary())
+    }
 }

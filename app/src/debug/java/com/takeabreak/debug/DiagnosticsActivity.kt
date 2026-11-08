@@ -96,7 +96,7 @@ class DiagnosticsActivity : ComponentActivity() {
             val long = pauses.filter { Duration.between(it.start, it.end).toMinutes() >= 30 }
             appendLine("Pausas armadas: ${pauses.size}. De 30 min o más: ${long.size}")
             long.forEach {
-                appendLine("  ${FORMAT.format(it.start)} → ${FORMAT.format(it.end)} · ${Duration.between(it.start, it.end).toMinutes()} min · ${BreakRules.validMinutes(it)} válidos")
+                appendLine("  ${FORMAT.format(it.start)} → ${FORMAT.format(it.end)} · ${Duration.between(it.start, it.end).toMinutes()} min · ${BreakRules().validMinutes(it)} válidos")
             }
         }
     }
