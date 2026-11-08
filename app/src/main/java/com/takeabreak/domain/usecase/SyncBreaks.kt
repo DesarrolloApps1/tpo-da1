@@ -19,7 +19,7 @@ class SyncBreaks(
         if (pauses.isEmpty()) return emptyList()
         // Los puntos de cada día arrancan de lo ya guardado y suman las pausas de esta tanda, en orden
         val pointsByDay = mutableMapOf<LocalDate, Int>()
-        val sessions = pauses.sortedBy { it.start }.map { pause ->
+        val sessions = pauses.filter(BreakRules::isRecorded).sortedBy { it.start }.map { pause ->
             val day = pause.start.toLocalDate()
             val pointsToday = pointsByDay.getOrPut(day) { breaks.pointsOn(day) }
             val validMinutes = BreakRules.validMinutes(pause)
@@ -27,7 +27,8 @@ class SyncBreaks(
             pointsByDay[day] = pointsToday + points
             BreakSession(pause.start, pause.end, validMinutes, points, statusOf(pause, validMinutes, points))
         }
-        // Primero Room y después el checkpoint: si el proceso muere en el medio, el upsert evita duplicados
+        // Primero Room y después el checkpoint: si el proceso muere en el medio, el upsert evita duplicados.
+        // El checkpoint avanza también sobre las pausas descartadas, para no volver a leerlas
         breaks.save(sessions)
         val lastEnd = pauses.maxOf { it.end }
         settings.saveCheckpoint(lastEnd.atZone(ZoneId.systemDefault()).toInstant())
@@ -38,6 +39,7 @@ class SyncBreaks(
     private fun statusOf(pause: Pause, validMinutes: Int, points: Int): BreakStatus {
         val minMinutes = BreakRules.minMinutes(pause)
         return when {
+            pause.clockChanged -> BreakStatus.CLOCK_CHANGED
             points > 0 -> BreakStatus.VALID
             validMinutes >= minMinutes -> BreakStatus.DAILY_CAP
             Duration.between(pause.start, pause.end).toMinutes() >= minMinutes -> BreakStatus.REST_TIME
