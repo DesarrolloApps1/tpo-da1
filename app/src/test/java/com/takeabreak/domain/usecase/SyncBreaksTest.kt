@@ -122,4 +122,25 @@ class SyncBreaksTest {
         val expected = LocalDateTime.parse("2026-10-27T11:00").atZone(ZoneId.systemDefault()).toInstant()
         assertEquals(listOf(expected), settings.savedCheckpoints)
     }
+
+    @Test
+    fun `las pausas de menos de 1 minuto no se guardan pero mueven el checkpoint`() = runTest {
+        val saved = syncBreaks(
+            listOf(
+                pause("2026-10-27T10:00", "2026-10-27T11:00"),
+                Pause(LocalDateTime.parse("2026-10-27T11:30:00"), LocalDateTime.parse("2026-10-27T11:30:40")),
+            ),
+        )
+
+        assertEquals(listOf(Triple(60, 60, BreakStatus.VALID)), saved.summary())
+        val expected = LocalDateTime.parse("2026-10-27T11:30:40").atZone(ZoneId.systemDefault()).toInstant()
+        assertEquals(listOf(expected), settings.savedCheckpoints)
+    }
+
+    @Test
+    fun `una pausa con cambio de hora no suma y queda con su motivo`() = runTest {
+        val changed = Pause(LocalDateTime.parse("2026-10-27T10:00"), LocalDateTime.parse("2026-10-27T11:00"), clockChanged = true)
+
+        assertEquals(listOf(Triple(60, 0, BreakStatus.CLOCK_CHANGED)), syncBreaks(listOf(changed)).summary())
+    }
 }

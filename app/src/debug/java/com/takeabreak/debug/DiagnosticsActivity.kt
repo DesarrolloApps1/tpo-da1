@@ -147,6 +147,8 @@ class DiagnosticsActivity : ComponentActivity() {
             UsageEvents.Event.SCREEN_NON_INTERACTIVE to "SCREEN_NON_INTERACTIVE",
             UsageEvents.Event.KEYGUARD_SHOWN to "KEYGUARD_SHOWN",
             UsageEvents.Event.KEYGUARD_HIDDEN to "KEYGUARD_HIDDEN",
+            UsageEvents.Event.DEVICE_SHUTDOWN to "DEVICE_SHUTDOWN",
+            UsageEvents.Event.DEVICE_STARTUP to "DEVICE_STARTUP",
         )
     }
 }
