@@ -20,8 +20,9 @@ import com.takeabreak.domain.model.Reward
 import com.takeabreak.ui.navigation.DeepLinks
 
 interface Notifier {
-    // reachedGoal: el premio meta si el saldo ya alcanza, para abrirlo directo
-    suspend fun breakValidated(session: BreakSession, reachedGoal: Reward? = null)
+    // Las pausas que sumaron en una misma lectura van en un solo aviso: después de días sin abrir
+    // la app pueden ser muchas. reachedGoal: el premio meta si el saldo ya alcanza, para abrirlo directo
+    suspend fun breaksValidated(sessions: List<BreakSession>, reachedGoal: Reward? = null)
     suspend fun redemptionConfirmed(redemption: Redemption)
 }
 
@@ -32,12 +33,21 @@ class AndroidNotifier(private val context: Context) : Notifier {
         context.getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }
 
-    override suspend fun breakValidated(session: BreakSession, reachedGoal: Reward?) = show(
-        id = session.start.hashCode(),
-        text = context.getString(R.string.notification_break_validated, session.points) +
-            reachedGoal?.let { context.getString(R.string.notification_goal_reached, it.title) }.orEmpty(),
-        deepLink = DeepLinks.afterBreak(reachedGoal?.id),
-    )
+    // Siempre el mismo id: un aviso nuevo reemplaza al anterior en vez de apilarse
+    override suspend fun breaksValidated(sessions: List<BreakSession>, reachedGoal: Reward?) {
+        if (sessions.isEmpty()) return
+        val points = sessions.sumOf { it.points }
+        val text = if (sessions.size == 1) {
+            context.getString(R.string.notification_break_validated, points)
+        } else {
+            context.getString(R.string.notification_breaks_validated, sessions.size, points)
+        }
+        show(
+            id = BREAKS_NOTIFICATION_ID,
+            text = text + reachedGoal?.let { context.getString(R.string.notification_goal_reached, it.title) }.orEmpty(),
+            deepLink = DeepLinks.afterBreak(reachedGoal?.id),
+        )
+    }
 
     // El código queda arriba de todo en Mis canjes, que es la pantalla que lo muestra
     override suspend fun redemptionConfirmed(redemption: Redemption) = show(
@@ -68,5 +78,6 @@ class AndroidNotifier(private val context: Context) : Notifier {
 
     private companion object {
         const val CHANNEL_ID = "breaks"
+        const val BREAKS_NOTIFICATION_ID = 1
     }
 }

@@ -99,11 +99,12 @@ class FakeNetworkMonitor : NetworkMonitor {
 }
 
 class FakeNotifier : Notifier {
-    val breaks = mutableListOf<Pair<BreakSession, Reward?>>()
+    // Un elemento por aviso, con las pausas que incluyó
+    val breaks = mutableListOf<Pair<List<BreakSession>, Reward?>>()
     val redemptions = mutableListOf<Redemption>()
 
-    override suspend fun breakValidated(session: BreakSession, reachedGoal: Reward?) {
-        breaks += session to reachedGoal
+    override suspend fun breaksValidated(sessions: List<BreakSession>, reachedGoal: Reward?) {
+        breaks += sessions to reachedGoal
     }
 
     override suspend fun redemptionConfirmed(redemption: Redemption) {

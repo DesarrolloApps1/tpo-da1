@@ -12,8 +12,8 @@ class PreferenceGatedNotifier(
     private val settings: SettingsRepository,
 ) : Notifier {
 
-    override suspend fun breakValidated(session: BreakSession, reachedGoal: Reward?) {
-        if (enabled()) delegate.breakValidated(session, reachedGoal)
+    override suspend fun breaksValidated(sessions: List<BreakSession>, reachedGoal: Reward?) {
+        if (enabled()) delegate.breaksValidated(sessions, reachedGoal)
     }
 
     override suspend fun redemptionConfirmed(redemption: Redemption) {
