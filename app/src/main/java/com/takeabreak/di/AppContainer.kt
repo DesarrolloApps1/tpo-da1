@@ -49,6 +49,7 @@ import com.takeabreak.platform.notifications.PreferenceGatedNotifier
 import com.takeabreak.platform.permissions.AndroidPermissionChecker
 import com.takeabreak.platform.usage.AndroidUsageEventsReader
 import com.takeabreak.platform.usage.UsageEventsReader
+import com.takeabreak.platform.workers.BreakSync
 import com.takeabreak.platform.workers.WorkScheduler
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -117,6 +118,9 @@ class AppContainer(context: Context) {
     val signInWithGoogle by lazy { SignInWithGoogle(authRepository) }
     val signInWithEmail by lazy { SignInWithEmail(authRepository) }
     val signOut by lazy { SignOut(authRepository) }
+
+    // Una sola instancia para todo el proceso: su Mutex es lo que evita dos sincronizaciones a la vez
+    val breakSync by lazy { BreakSync(usageEventsReader, settings, syncBreaks, getHomeSummary, notifier) }
     val observeSession by lazy { ObserveSession(authRepository) }
     val getAccount by lazy { GetAccount(authRepository) }
 }

@@ -24,10 +24,10 @@ class PreferenceGatedNotifierTest {
     fun `con notificaciones activas avisa y pasa el premio meta`() = runTest {
         val goal = reward("yoga")
 
-        notifier.breakValidated(session, goal)
+        notifier.breaksValidated(listOf(session), goal)
         notifier.redemptionConfirmed(redemption("a"))
 
-        assertEquals(listOf(session to goal), delegate.breaks)
+        assertEquals(listOf(listOf(session) to goal), delegate.breaks)
         assertEquals(1, delegate.redemptions.size)
     }
 
@@ -35,7 +35,7 @@ class PreferenceGatedNotifierTest {
     fun `con notificaciones apagadas no avisa nada`() = runTest {
         settings.setNotificationsEnabled(false)
 
-        notifier.breakValidated(session)
+        notifier.breaksValidated(listOf(session))
         notifier.redemptionConfirmed(redemption("a"))
 
         assertTrue(delegate.breaks.isEmpty())
@@ -45,10 +45,10 @@ class PreferenceGatedNotifierTest {
     @Test
     fun `volver a activarlas avisa de nuevo`() = runTest {
         settings.setNotificationsEnabled(false)
-        notifier.breakValidated(session)
+        notifier.breaksValidated(listOf(session))
 
         settings.setNotificationsEnabled(true)
-        notifier.breakValidated(session)
+        notifier.breaksValidated(listOf(session))
 
         assertEquals(1, delegate.breaks.size)
     }
