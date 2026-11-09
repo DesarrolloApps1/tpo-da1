@@ -150,4 +150,104 @@ class SyncBreaksTest {
 
         assertEquals(listOf(Triple(300, 180, BreakStatus.PAUSE_CAP)), saved.summary())
     }
+
+    private fun declareAt(time: String) {
+        settings.declaredBreakAt.value = LocalDateTime.parse(time).atZone(ZoneId.systemDefault()).toInstant()
+    }
+
+    @Test
+    fun `tocar el tile y bloquear una hora un martes suma 60 mas el bonus`() = runTest {
+        declareAt("2026-10-27T09:59")
+
+        val saved = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T11:00")))
+
+        assertEquals(listOf(Triple(60, 66, BreakStatus.VALID)), saved.summary())
+        assertEquals(6, saved.single().bonusPoints)
+        assertEquals(null, settings.declaredBreakAt.value)
+    }
+
+    @Test
+    fun `tocar el tile sin bloquear no cambia nada`() = runTest {
+        declareAt("2026-10-27T09:59")
+
+        val saved = syncBreaks(listOf(pause("2026-10-26T14:00", "2026-10-26T14:45")))
+
+        assertEquals(listOf(Triple(45, 45, BreakStatus.VALID)), saved.summary())
+        assertEquals(0, saved.single().bonusPoints)
+        // La declaración sigue esperando el bloqueo
+        assertTrue(settings.declaredBreakAt.value != null)
+    }
+
+    @Test
+    fun `una pausa que empieza fuera de la ventana no recibe el bonus y consume la declaracion`() = runTest {
+        declareAt("2026-10-27T09:50")
+
+        val saved = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T11:00")))
+
+        assertEquals(listOf(Triple(60, 60, BreakStatus.VALID)), saved.summary())
+        assertEquals(null, settings.declaredBreakAt.value)
+    }
+
+    @Test
+    fun `el bonus es solo para la primera pausa despues de tocar el tile`() = runTest {
+        declareAt("2026-10-27T09:59")
+
+        val saved = syncBreaks(
+            listOf(
+                pause("2026-10-27T10:00", "2026-10-27T11:00"),
+                pause("2026-10-27T11:01", "2026-10-27T12:01"),
+            ),
+        )
+
+        assertEquals(listOf(66, 60), saved.map { it.points })
+    }
+
+    @Test
+    fun `una pausa corta que no suma tampoco recibe el bonus`() = runTest {
+        declareAt("2026-10-27T09:59")
+
+        val saved = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T10:20")))
+
+        assertEquals(listOf(Triple(20, 0, BreakStatus.TOO_SHORT)), saved.summary())
+        assertEquals(0, saved.single().bonusPoints)
+    }
+
+    @Test
+    fun `el bonus no supera el tope por pausa`() = runTest {
+        declareAt("2026-10-27T09:59")
+
+        val saved = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T13:00")))
+
+        assertEquals(listOf(Triple(180, 180, BreakStatus.VALID)), saved.summary())
+        assertEquals(0, saved.single().bonusPoints)
+    }
+
+    @Test
+    fun `el bonus no supera el tope diario`() = runTest {
+        breaks.sessions.value = listOf(
+            BreakSession(
+                LocalDateTime.parse("2026-10-27T07:00"), LocalDateTime.parse("2026-10-27T09:00"),
+                120, 120, BreakStatus.VALID,
+            ),
+        )
+        declareAt("2026-10-27T09:59")
+
+        // 120 ya sumados: quedan 120. 100 min + 10 % = 110, entra completo
+        val first = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T11:40")))
+        assertEquals(110, first.single().points)
+
+        // 230 sumados: quedan 10 de tope, aunque 60 + 6 = 66
+        declareAt("2026-10-27T12:59")
+        val second = syncBreaks(listOf(pause("2026-10-27T13:00", "2026-10-27T14:00")))
+        assertEquals(10, second.single().points)
+        assertEquals(0, second.single().bonusPoints)
+    }
+
+    @Test
+    fun `sin declaracion no hay bonus`() = runTest {
+        val saved = syncBreaks(listOf(pause("2026-10-27T10:00", "2026-10-27T11:00")))
+
+        assertEquals(0, saved.single().bonusPoints)
+        assertEquals(60, saved.single().points)
+    }
 }

@@ -20,13 +20,21 @@ class BreakRules(val config: BreakRulesConfig = BreakRulesConfig()) {
     fun isDeclarationActive(declaredAt: Instant, now: Instant): Boolean =
         !now.isBefore(declaredAt) && Duration.between(declaredAt, now).toMinutes() < config.tileWindowMinutes
 
-    fun points(pause: Pause, pointsToday: Int): Int {
+    // declared: la pausa empezó dentro de la ventana de un break declarado en el tile
+    fun points(pause: Pause, pointsToday: Int, declared: Boolean = false): Int {
         if (pause.clockChanged) return 0
         val countable = validMinutes(pause)
         if (countable < minMinutes(pause)) return 0
-        return countable
+        val base = countable.coerceAtMost(config.pauseCapMinutes)
+        val withBonus = if (declared) base + base * config.tileBonusPercent / 100 else base
+        // El bonus no pasa ni el tope por pausa ni el diario
+        return withBonus
             .coerceAtMost(config.pauseCapMinutes)
             .coerceAtMost(config.dailyCap - pointsToday)
             .coerceAtLeast(0)
     }
+
+    // Puntos de más que dio el tile: lo que sumó la pausa menos lo que habría sumado sin declarar
+    fun bonusPoints(pause: Pause, pointsToday: Int): Int =
+        points(pause, pointsToday, declared = true) - points(pause, pointsToday)
 }

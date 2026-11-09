@@ -17,6 +17,7 @@ data class BreakSessionEntity(
     val validMinutes: Int,
     val points: Int,
     val status: BreakStatus,
+    val bonusPoints: Int,
 )
 
 @Entity(tableName = "businesses")

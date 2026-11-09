@@ -6,6 +6,7 @@ import com.takeabreak.domain.model.Pause
 import com.takeabreak.domain.repository.BreakRepository
 import com.takeabreak.domain.repository.SettingsRepository
 import com.takeabreak.domain.rules.BreakRules
+import kotlinx.coroutines.flow.first
 import java.time.Duration
 import java.time.LocalDate
 import java.time.ZoneId
@@ -20,17 +21,29 @@ class SyncBreaks(
         if (pauses.isEmpty()) return emptyList()
         // Los puntos de cada día arrancan de lo ya guardado y suman las pausas de esta tanda, en orden
         val pointsByDay = mutableMapOf<LocalDate, Int>()
+        // El break declarado en el tile es para la primera pausa que empieza después de tocarlo
+        var declaredAt = settings.declaredBreakAt.first()
+        var declarationUsed = false
         val sessions = pauses.filter(rules::isRecorded).sortedBy { it.start }.map { pause ->
             val day = pause.start.toLocalDate()
             val pointsToday = pointsByDay.getOrPut(day) { breaks.pointsOn(day) }
             val validMinutes = rules.validMinutes(pause)
-            val points = rules.points(pause, pointsToday)
+            val startedAt = pause.start.atZone(ZoneId.systemDefault()).toInstant()
+            val declaration = declaredAt?.takeIf { !startedAt.isBefore(it) }
+            val declared = declaration != null && rules.isDeclarationActive(declaration, startedAt)
+            if (declaration != null) {
+                declaredAt = null
+                declarationUsed = true
+            }
+            val points = rules.points(pause, pointsToday, declared)
+            val bonus = if (declared) rules.bonusPoints(pause, pointsToday) else 0
             pointsByDay[day] = pointsToday + points
-            BreakSession(pause.start, pause.end, validMinutes, points, statusOf(pause, validMinutes, points))
+            BreakSession(pause.start, pause.end, validMinutes, points, statusOf(pause, validMinutes, points), bonus)
         }
         // Primero Room y después el checkpoint: si el proceso muere en el medio, el upsert evita duplicados.
         // El checkpoint avanza también sobre las pausas descartadas, para no volver a leerlas
         breaks.save(sessions)
+        if (declarationUsed) settings.clearDeclaredBreak()
         val lastEnd = pauses.maxOf { it.end }
         settings.saveCheckpoint(lastEnd.atZone(ZoneId.systemDefault()).toInstant())
         return sessions
