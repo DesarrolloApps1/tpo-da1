@@ -65,6 +65,9 @@ fun ErrorMessage(
     val (title, body) = when (cause) {
         ErrorCause.NO_CONNECTION -> R.string.error_offline_title to R.string.error_offline_body
         ErrorCause.MISSING_PERMISSION -> R.string.error_permission_title to R.string.error_permission_body
+        ErrorCause.OUT_OF_STOCK -> R.string.error_out_of_stock_title to R.string.error_out_of_stock_body
+        ErrorCause.INSUFFICIENT_BALANCE -> R.string.error_insufficient_balance_title to R.string.error_insufficient_balance_body
+        ErrorCause.REWARD_UNAVAILABLE -> R.string.error_reward_unavailable_title to R.string.error_reward_unavailable_body
         ErrorCause.UNKNOWN -> R.string.error_generic to R.string.error_generic_body
     }
     Column(
@@ -76,7 +79,7 @@ fun ErrorMessage(
         Text(stringResource(body), color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         if (cause == ErrorCause.MISSING_PERMISSION) {
             PillButton(stringResource(R.string.open_settings), onClick = { context.openSettingsFor(null) })
-        } else if (onRetry != null) {
+        } else if (onRetry != null && cause.canRetry) {
             PillButton(stringResource(R.string.retry), onRetry)
         }
         if (cause == ErrorCause.NO_CONNECTION && onContinueOffline != null) {
@@ -103,9 +106,10 @@ fun OfflineBanner(modifier: Modifier = Modifier) {
 
 // Acción principal: 56 dp de alto y abajo, al alcance del pulgar
 @Composable
-fun PillButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun PillButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         shape = PillShape,
         modifier = modifier.widthIn(max = 320.dp).fillMaxWidth().heightIn(min = 56.dp),
     ) {

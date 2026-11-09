@@ -22,4 +22,10 @@ interface TakeABreakApi {
 
     @GET("redemptions/{id}")
     suspend fun redemption(@Path("id") id: String): RedemptionDto
+
+    @POST("redemptions/{id}/use")
+    suspend fun useRedemption(@Path("id") id: String, @Body body: UseRedemptionRequest): RedemptionDto
+
+    @POST("points/daily")
+    suspend fun reportDailyPoints(@Body days: List<DailyPointsDto>): BalanceDto
 }

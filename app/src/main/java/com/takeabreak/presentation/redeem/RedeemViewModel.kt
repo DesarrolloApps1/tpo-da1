@@ -7,18 +7,21 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.takeabreak.di.appContainer
+import com.takeabreak.domain.model.RedeemError
+import com.takeabreak.domain.model.RedeemResult
 import com.takeabreak.domain.model.Redemption
 import com.takeabreak.domain.usecase.GetRedemptions
 import com.takeabreak.domain.usecase.GetRewards
 import com.takeabreak.domain.usecase.RedeemReward
+import com.takeabreak.presentation.ErrorCause
 import com.takeabreak.presentation.ScreenState
 import com.takeabreak.presentation.UiState
-import com.takeabreak.presentation.toErrorCause
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 // Empty = esperando que mantenga presionado; Content = código o canje pendiente
 class RedeemViewModel(
@@ -46,14 +49,30 @@ class RedeemViewModel(
                 _state.value = ScreenState(UiState.Error())
                 return@launch
             }
-            _state.value = redeemReward(reward).fold(
-                onSuccess = {
-                    handle[REDEMPTION_ID] = it.id
-                    ScreenState(UiState.Content(it))
-                },
-                onFailure = { ScreenState(UiState.Error(it.toErrorCause())) },
-            )
+            _state.value = when (val result = redeemReward(attemptId(), reward)) {
+                is RedeemResult.Success -> {
+                    handle[REDEMPTION_ID] = result.redemption.id
+                    ScreenState(UiState.Content(result.redemption))
+                }
+                is RedeemResult.Failure -> {
+                    // Si falló la red, el servidor puede haberlo creado igual: el reintento repite el id.
+                    // Si lo rechazó, no hay nada que repetir
+                    if (result.error.toCause().canRetry.not()) handle.remove<String>(ATTEMPT_ID)
+                    ScreenState(UiState.Error(result.error.toCause()))
+                }
+            }
         }
+    }
+
+    private fun attemptId(): String =
+        handle.get<String>(ATTEMPT_ID) ?: UUID.randomUUID().toString().also { handle[ATTEMPT_ID] = it }
+
+    private fun RedeemError.toCause(): ErrorCause = when (this) {
+        RedeemError.NO_CONNECTION -> ErrorCause.NO_CONNECTION
+        RedeemError.OUT_OF_STOCK -> ErrorCause.OUT_OF_STOCK
+        RedeemError.INSUFFICIENT_BALANCE -> ErrorCause.INSUFFICIENT_BALANCE
+        RedeemError.REWARD_UNAVAILABLE -> ErrorCause.REWARD_UNAVAILABLE
+        RedeemError.UNKNOWN -> ErrorCause.UNKNOWN
     }
 
     private fun restore(redemptionId: String) {
@@ -64,6 +83,7 @@ class RedeemViewModel(
 
     companion object {
         private const val REDEMPTION_ID = "redemptionId"
+        private const val ATTEMPT_ID = "attemptId"
 
         val Factory = viewModelFactory {
             initializer {

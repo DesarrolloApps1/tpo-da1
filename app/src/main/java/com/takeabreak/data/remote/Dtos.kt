@@ -36,10 +36,26 @@ data class RewardDto(
     val points: Int,
     val dailyStock: Int,
     val updatedAt: Long,
+    // true si se dio de baja: hay que borrarlo de Room
+    val deleted: Boolean = false,
 )
 
 @Serializable
 data class RedemptionRequest(val id: String, val rewardId: String, val points: Int)
+
+// Total de puntos de un día (yyyy-MM-dd). Nunca se mandan pausas ni horarios
+@Serializable
+data class DailyPointsDto(val day: String, val points: Int)
+
+@Serializable
+data class BalanceDto(val balance: Int)
+
+@Serializable
+data class UseRedemptionRequest(val pin: String)
+
+// Cuerpo de las respuestas de error del backend
+@Serializable
+data class ErrorDto(val error: String, val attemptsLeft: Int? = null)
 
 // status: ACTIVE, USED, EXPIRED o REJECTED
 @Serializable

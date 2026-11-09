@@ -12,12 +12,21 @@
     <string name="explore_empty">Todavía no hay premios guardados.</string>
     <string name="activity_empty">Tus pausas de los últimos 30 días van a aparecer acá.</string>
     <string name="redemptions_empty">Todavía no canjeaste ningún premio.</string>
+    <string name="redemptions_unknown_reward">Premio que ya no está disponible</string>
+    <string name="redemptions_show">Mostrar</string>
+    <string name="redemptions_hide">Ocultar</string>
+    <string name="redemptions_expires_in">Vence en %1$d:%2$02d</string>
+    <string name="redemptions_used">Usado</string>
+    <string name="redemptions_expired">Vencido · los puntos volvieron a tu saldo</string>
+    <string name="redemptions_refunded">Devuelto · los puntos volvieron a tu saldo</string>
+    <string name="explore_updated_now">Actualizado recién</string>
+    <string name="explore_updated_ago">Actualizado hace %1$s</string>
     <string name="reward_not_found">No encontramos este premio.</string>
 
     <string name="set_goal">Fijar como meta</string>
     <string name="redeem">Canjear</string>
     <string name="redeem_confirm">Confirmar canje</string>
-    <string name="redeem_pending">Sin conexión. Tus puntos quedan reservados y el canje se confirma al volver la red.</string>
+    <string name="redeem_needs_connection">Para canjear hace falta conexión. No se descontó ningún punto.</string>
     <string name="my_redemptions">Mis canjes</string>
     <string name="done">Listo</string>
 
@@ -56,6 +65,12 @@
     <string name="error_offline_body">Lo que ya está guardado sigue disponible y tus pausas se siguen contando. Conectate y reintentá.</string>
     <string name="error_permission_title">Falta un permiso</string>
     <string name="error_permission_body">Activalo en Ajustes para usar esta parte de la app.</string>
+    <string name="error_out_of_stock_title">Se agotó por hoy</string>
+    <string name="error_out_of_stock_body">Este premio no tiene más stock hoy. No se descontó ningún punto. Probá con otro o volvé mañana.</string>
+    <string name="error_insufficient_balance_title">Todavía no te alcanza</string>
+    <string name="error_insufficient_balance_body">Tu saldo confirmado no llega para este premio. No se descontó ningún punto.</string>
+    <string name="error_reward_unavailable_title">Este premio ya no está</string>
+    <string name="error_reward_unavailable_body">El comercio lo dio de baja. No se descontó ningún punto. Elegí otro premio.</string>
     <string name="retry">Reintentar</string>
     <string name="open_settings">Ir a Ajustes</string>
     <string name="continue_offline">Seguir sin conexión</string>
@@ -98,7 +113,6 @@
     <string name="notification_breaks_validated">%1$d breaks validados: +%2$d pts</string>
     <string name="notification_declared_bonus">(incluye +%1$d por break declarado)</string>
     <string name="notification_goal_reached">. Ya te alcanza para %1$s</string>
-    <string name="notification_redemption_confirmed">Tu canje se confirmó. Ya podés mostrar el código.</string>
 
     <string name="profile_tile_title">Me tomo un break</string>
     <string name="profile_tile_body">Tocá el tile en ajustes rápidos y bloqueá el teléfono en los 2 minutos siguientes: esa pausa suma un 10 % más. Si no bloqueás, no pasa nada.</string>

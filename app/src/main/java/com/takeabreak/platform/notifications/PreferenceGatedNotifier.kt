@@ -1,7 +1,6 @@
 package com.takeabreak.platform.notifications
 
 import com.takeabreak.domain.model.BreakSession
-import com.takeabreak.domain.model.Redemption
 import com.takeabreak.domain.model.Reward
 import com.takeabreak.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.first
@@ -14,10 +13,6 @@ class PreferenceGatedNotifier(
 
     override suspend fun breaksValidated(sessions: List<BreakSession>, reachedGoal: Reward?) {
         if (enabled()) delegate.breaksValidated(sessions, reachedGoal)
-    }
-
-    override suspend fun redemptionConfirmed(redemption: Redemption) {
-        if (enabled()) delegate.redemptionConfirmed(redemption)
     }
 
     private suspend fun enabled() = settings.notificationsEnabled.first()

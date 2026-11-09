@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 class GetRedemptions(private val redemptions: RedemptionRepository) {
     operator fun invoke(): Flow<List<Redemption>> = redemptions.observeRedemptions()
+
+    suspend fun refreshActive() = redemptions.refreshActive()
 }
