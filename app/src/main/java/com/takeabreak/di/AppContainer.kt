@@ -64,11 +64,12 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
 
 // Inyección manual: cada dependencia se crea una sola vez, cuando se necesita
-class AppContainer(context: Context) {
+// baseUrl y database quedan a mano para que los tests instrumentados usen un servidor falso
+class AppContainer(context: Context, private val baseUrl: String = BuildConfig.BASE_URL) {
 
     private val appContext = context.applicationContext
 
-    private val database by lazy {
+    internal val database by lazy {
         Room.databaseBuilder(appContext, AppDatabase::class.java, "takeabreak.db")
             .addMigrations(AppDatabase.MIGRATION_1_2)
             .build()
@@ -80,7 +81,7 @@ class AppContainer(context: Context) {
         val json = Json { ignoreUnknownKeys = true }
         val client = OkHttpClient.Builder().addInterceptor(AuthInterceptor(sessionStore)).build()
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()

@@ -7,7 +7,7 @@ import com.takeabreak.platform.workers.WorkScheduler
 class TakeABreakApp : Application() {
 
     lateinit var container: AppContainer
-        private set
+        internal set
 
     override fun onCreate() {
         super.onCreate()
