@@ -16,4 +16,6 @@ data class BreakRulesConfig(
     val minRecordedMinutes: Int = 1,
     // Bonus por declarar el break desde el tile (US-14), en porcentaje de los puntos de la pausa
     val tileBonusPercent: Int = 10,
+    // Tiempo desde que se toca el tile en el que tiene que empezar la pausa; después se descarta
+    val tileWindowMinutes: Int = 2,
 )

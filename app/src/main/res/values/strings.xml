@@ -98,4 +98,7 @@
     <string name="notification_breaks_validated">%1$d breaks validados: +%2$d pts</string>
     <string name="notification_goal_reached">. Ya te alcanza para %1$s</string>
     <string name="notification_redemption_confirmed">Tu canje se confirmó. Ya podés mostrar el código.</string>
+
+    <string name="tile_label">Me tomo un break</string>
+    <string name="tile_subtitle_active">Bloqueá el teléfono</string>
 </resources>

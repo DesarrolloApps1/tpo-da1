@@ -1,6 +1,7 @@
 package com.takeabreak.domain.rules
 
 import com.takeabreak.domain.model.Pause
+import java.time.Instant
 import java.time.LocalDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -69,5 +70,15 @@ class BreakRulesTest {
         assertEquals(60, custom.points(pause, pointsToday = 0))
         assertEquals(20, custom.points(pause("2026-10-27T10:00", "2026-10-27T10:20"), pointsToday = 0))
         assertEquals(0, rules.points(pause("2026-10-27T10:00", "2026-10-27T10:20"), pointsToday = 0))
+    }
+
+    @Test
+    fun `la declaracion del tile vale hasta que se cumple la ventana`() {
+        val at = Instant.parse("2026-10-27T10:00:00Z")
+
+        assertEquals(true, rules.isDeclarationActive(at, at))
+        assertEquals(true, rules.isDeclarationActive(at, at.plusSeconds(119)))
+        assertEquals(false, rules.isDeclarationActive(at, at.plusSeconds(120)))
+        assertEquals(false, rules.isDeclarationActive(at, at.minusSeconds(1)))
     }
 }

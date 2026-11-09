@@ -25,6 +25,7 @@ class FakeSettingsRepository : SettingsRepository {
     override val dailyGoal = MutableStateFlow(60)
     override val lastCatalogSync = MutableStateFlow<Instant?>(null)
     override val notificationsEnabled = MutableStateFlow(true)
+    override val declaredBreakAt = MutableStateFlow<Instant?>(null)
 
     override suspend fun setGoal(rewardId: String) {
         goalRewardId.value = rewardId
@@ -40,6 +41,14 @@ class FakeSettingsRepository : SettingsRepository {
 
     override suspend fun saveCatalogSync(at: Instant) {
         lastCatalogSync.value = at
+    }
+
+    override suspend fun declareBreak(at: Instant) {
+        declaredBreakAt.value = at
+    }
+
+    override suspend fun clearDeclaredBreak() {
+        declaredBreakAt.value = null
     }
 
     val savedCheckpoints = mutableListOf<Instant>()
