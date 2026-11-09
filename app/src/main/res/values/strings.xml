@@ -100,6 +100,10 @@
     <string name="notification_goal_reached">. Ya te alcanza para %1$s</string>
     <string name="notification_redemption_confirmed">Tu canje se confirmó. Ya podés mostrar el código.</string>
 
+    <string name="profile_tile_title">Me tomo un break</string>
+    <string name="profile_tile_body">Tocá el tile en ajustes rápidos y bloqueá el teléfono en los 2 minutos siguientes: esa pausa suma un 10 % más. Si no bloqueás, no pasa nada.</string>
+    <string name="profile_tile_add">Agregar a ajustes rápidos</string>
+    <string name="profile_tile_manual">Para agregarlo, abrí los ajustes rápidos, tocá el lápiz y arrastrá "Me tomo un break".</string>
     <string name="tile_label">Me tomo un break</string>
     <string name="tile_subtitle_active">Bloqueá el teléfono</string>
 </resources>
