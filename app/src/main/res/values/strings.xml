@@ -96,6 +96,7 @@
     <string name="notification_channel">Pausas y canjes</string>
     <string name="notification_break_validated">Break validado: +%1$d pts</string>
     <string name="notification_breaks_validated">%1$d breaks validados: +%2$d pts</string>
+    <string name="notification_declared_bonus">(incluye +%1$d por break declarado)</string>
     <string name="notification_goal_reached">. Ya te alcanza para %1$s</string>
     <string name="notification_redemption_confirmed">Tu canje se confirmó. Ya podés mostrar el código.</string>
 
