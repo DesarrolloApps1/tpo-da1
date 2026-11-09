@@ -59,6 +59,8 @@ import com.takeabreak.R
 import com.takeabreak.domain.model.AppPermission
 import com.takeabreak.domain.model.Profile
 import com.takeabreak.platform.permissions.openSettingsFor
+import com.takeabreak.platform.tile.canRequestAddTile
+import com.takeabreak.platform.tile.requestAddBreakTile
 import com.takeabreak.presentation.profile.ProfileViewModel
 import com.takeabreak.ui.components.InitialAvatar
 import com.takeabreak.ui.components.StateContent
@@ -186,6 +188,9 @@ private fun ProfileContent(
             }
         }
 
+        Text(stringResource(R.string.profile_tile_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        TileCard()
+
         SettingRow(
             icon = Icons.AutoMirrored.Filled.ExitToApp,
             label = stringResource(R.string.profile_sign_out),
@@ -225,6 +230,22 @@ private fun NotificationsRow(enabled: Boolean, onChange: (Boolean) -> Unit) {
             )
         }
         Switch(checked = enabled, onCheckedChange = null)
+    }
+}
+
+// Explica el tile de ajustes rápidos; el botón solo existe desde Android 13
+@Composable
+private fun TileCard() {
+    val context = LocalContext.current
+    SettingsCard {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(stringResource(R.string.profile_tile_body), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (canRequestAddTile) {
+                TextButton(onClick = { context.requestAddBreakTile() }) { Text(stringResource(R.string.profile_tile_add)) }
+            } else {
+                Text(stringResource(R.string.profile_tile_manual), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
     }
 }
 
