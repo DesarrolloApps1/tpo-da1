@@ -44,10 +44,13 @@ class AndroidNotifier(private val context: Context) : Notifier {
         }
         show(
             id = BREAKS_NOTIFICATION_ID,
-            text = text + reachedGoal?.let { context.getString(R.string.notification_goal_reached, it.title) }.orEmpty(),
+            text = text + bonusText(sessions.sumOf { it.bonusPoints }) + reachedGoal?.let { context.getString(R.string.notification_goal_reached, it.title) }.orEmpty(),
             deepLink = DeepLinks.afterBreak(reachedGoal?.id),
         )
     }
+
+    private fun bonusText(bonus: Int): String =
+        if (bonus > 0) " " + context.getString(R.string.notification_declared_bonus, bonus) else ""
 
     // El código queda arriba de todo en Mis canjes, que es la pantalla que lo muestra
     override suspend fun redemptionConfirmed(redemption: Redemption) = show(
