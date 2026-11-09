@@ -29,6 +29,7 @@ fun BreakSessionEntity.toDomain() = BreakSession(
     validMinutes = validMinutes,
     points = points,
     status = status,
+    bonusPoints = bonusPoints,
 )
 
 fun BreakSession.toEntity() = BreakSessionEntity(
@@ -37,6 +38,7 @@ fun BreakSession.toEntity() = BreakSessionEntity(
     validMinutes = validMinutes,
     points = points,
     status = status,
+    bonusPoints = bonusPoints,
 )
 
 fun BusinessEntity.toDomain() = Business(id, name, address, neighborhood, Coordinates(lat, lng), openingHours)

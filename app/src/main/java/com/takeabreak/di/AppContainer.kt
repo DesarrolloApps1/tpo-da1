@@ -65,7 +65,9 @@ class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
     private val database by lazy {
-        Room.databaseBuilder(appContext, AppDatabase::class.java, "takeabreak.db").build()
+        Room.databaseBuilder(appContext, AppDatabase::class.java, "takeabreak.db")
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
     }
 
     private val sessionStore by lazy { SessionStore(appContext.dataStore, KeystoreTokenCipher()) }
