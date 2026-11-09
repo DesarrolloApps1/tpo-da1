@@ -51,6 +51,26 @@ class SessionStoreTest {
     }
 
     @Test
+    fun `guarda el saldo y acumula los dias informados`() = runBlocking {
+        store.savePointsReport(mapOf("2026-11-08" to 100, "2026-11-07" to 40), 140)
+        store.savePointsReport(mapOf("2026-11-08" to 150), 190)
+
+        assertEquals(190, store.lastKnownBalance.first())
+        assertEquals(mapOf("2026-11-08" to 150, "2026-11-07" to 40), store.reportedDays.first())
+    }
+
+    @Test
+    fun `cerrar sesion borra el saldo y los dias informados`() = runBlocking {
+        store.save("jwt-secreto")
+        store.savePointsReport(mapOf("2026-11-08" to 100), 100)
+
+        store.clear()
+
+        assertNull(store.lastKnownBalance.first())
+        assertEquals(emptyMap<String, Int>(), store.reportedDays.first())
+    }
+
+    @Test
     fun `cerrar sesion borra el token y la cuenta`() = runBlocking {
         store.save("jwt-secreto", Account("ana@mail.com", "Ana", "https://foto"))
 

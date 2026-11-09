@@ -1,6 +1,7 @@
 package com.takeabreak.presentation.redeem
 
 import androidx.lifecycle.SavedStateHandle
+import com.takeabreak.domain.model.RedeemError
 import com.takeabreak.domain.usecase.GetRedemptions
 import com.takeabreak.domain.usecase.GetRewards
 import com.takeabreak.domain.usecase.RedeemReward
@@ -47,6 +48,41 @@ class RedeemViewModelTest {
         vm.confirm()
 
         assertEquals(UiState.Error(ErrorCause.UNKNOWN), vm.state.value.content)
+    }
+
+    @Test
+    fun `sin red el reintento repite el mismo id para no duplicar el canje`() = runTest {
+        val vm = viewModel(SavedStateHandle(mapOf("id" to "cafe")))
+        redemptions.nextError = RedeemError.NO_CONNECTION
+
+        vm.confirm()
+        assertEquals(UiState.Error(ErrorCause.NO_CONNECTION), vm.state.value.content)
+        vm.confirm()
+
+        assertEquals(2, redemptions.requestedIds.size)
+        assertEquals(1, redemptions.requestedIds.toSet().size)
+    }
+
+    @Test
+    fun `si el servidor lo rechazo el proximo intento usa otro id`() = runTest {
+        val vm = viewModel(SavedStateHandle(mapOf("id" to "cafe")))
+        redemptions.nextError = RedeemError.OUT_OF_STOCK
+
+        vm.confirm()
+        assertEquals(UiState.Error(ErrorCause.OUT_OF_STOCK), vm.state.value.content)
+        vm.confirm()
+
+        assertEquals(2, redemptions.requestedIds.toSet().size)
+    }
+
+    @Test
+    fun `sin saldo muestra el error propio`() = runTest {
+        val vm = viewModel(SavedStateHandle(mapOf("id" to "cafe")))
+        redemptions.nextError = RedeemError.INSUFFICIENT_BALANCE
+
+        vm.confirm()
+
+        assertEquals(UiState.Error(ErrorCause.INSUFFICIENT_BALANCE), vm.state.value.content)
     }
 
     @Test
