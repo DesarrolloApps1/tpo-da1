@@ -1,6 +1,5 @@
 package com.takeabreak.data.repository
 
-import com.takeabreak.data.local.RedemptionDao
 import com.takeabreak.data.local.RedemptionEntity
 import com.takeabreak.data.remote.RedemptionDto
 import com.takeabreak.data.remote.RedemptionRequest
@@ -10,11 +9,9 @@ import com.takeabreak.domain.model.RedeemError
 import com.takeabreak.domain.model.RedeemResult
 import com.takeabreak.domain.model.RedemptionStatus
 import com.takeabreak.testing.FakeApi
+import com.takeabreak.testing.FakeRedemptionDao
 import com.takeabreak.testing.httpError
 import com.takeabreak.testing.reward
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -23,20 +20,7 @@ import java.io.IOException
 
 class RedemptionRepositoryImplTest {
 
-    private class FakeDao : RedemptionDao {
-        val rows = MutableStateFlow<Map<String, RedemptionEntity>>(emptyMap())
-        override fun observeAll(): Flow<List<RedemptionEntity>> = rows.map { it.values.toList() }
-        override fun observeSpentPoints(): Flow<Int> = rows.map { it.values.sumOf { row -> row.points } }
-        override suspend fun active() = rows.value.values.filter { it.status == RedemptionStatus.ACTIVE }
-        override suspend fun updateStatus(id: String, status: RedemptionStatus) {
-            rows.value += id to rows.value.getValue(id).copy(status = status)
-        }
-        override suspend fun upsert(redemption: RedemptionEntity) {
-            rows.value += redemption.id to redemption
-        }
-    }
-
-    private val dao = FakeDao()
+    private val dao = FakeRedemptionDao()
     private var pointsSyncs = 0
 
     private fun dto(id: String = "c-1", status: String = "ACTIVE") = RedemptionDto(id, "cafe", 100, "ABC234", status, 1L, 2L)
