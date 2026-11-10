@@ -207,6 +207,20 @@ class RepositoriesHttpTest {
         assertEquals(RedemptionStatus.USED, redemptionDao.rows.value.getValue("c-1").status)
     }
 
+    // El portal de un Wi-Fi público contesta 200 con HTML: Mis canjes no se tiene que cerrar
+    @Test
+    fun `refrescar con una pagina HTML en vez del backend deja lo guardado`() = runBlocking {
+        respond(201, redemptionJson())
+        redemptions.redeem("c-1", reward("cafe", points = 60))
+        val syncsBefore = pointsSyncs
+        server.enqueue(MockResponse().setResponseCode(200).setHeader("Content-Type", "text/html").setBody("<html>Iniciá sesión</html>"))
+
+        redemptions.refreshActive()
+
+        assertEquals(RedemptionStatus.ACTIVE, redemptionDao.rows.value.getValue("c-1").status)
+        assertEquals(syncsBefore, pointsSyncs)
+    }
+
     @Test
     fun `los puntos diarios mandan solo dia y total y guardan el saldo`() = runBlocking {
         respond(200, """{"balance":120}""")
