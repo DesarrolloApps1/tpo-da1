@@ -17,6 +17,7 @@ import com.takeabreak.domain.repository.RedemptionRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import retrofit2.HttpException
 import java.io.IOException
@@ -75,7 +76,8 @@ class RedemptionRepositoryImpl(
     override suspend fun refreshActive() {
         var changed = false
         dao.active().forEach { active ->
-            // Sin red o con un canje que el servidor no conoce queda lo guardado
+            // Sin red, con un canje que el servidor no conoce o con una respuesta que no es del backend
+            // (por ejemplo, el portal de un Wi-Fi público) queda lo guardado
             val entity = runCatchingNetwork { api.redemption(active.id).toEntity() } ?: return@forEach
             dao.upsert(entity)
             changed = changed || entity.status != active.status
@@ -117,6 +119,8 @@ class RedemptionRepositoryImpl(
     } catch (_: IOException) {
         null
     } catch (_: HttpException) {
+        null
+    } catch (_: SerializationException) {
         null
     }
 }

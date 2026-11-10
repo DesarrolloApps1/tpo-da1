@@ -13,6 +13,7 @@ import com.takeabreak.testing.FakeRedemptionDao
 import com.takeabreak.testing.httpError
 import com.takeabreak.testing.reward
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.SerializationException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -157,6 +158,20 @@ class RedemptionRepositoryImplTest {
         dao.upsert(entity())
         val repo = repository(object : FakeApi() {
             override suspend fun redemption(id: String): RedemptionDto = throw IOException()
+        })
+
+        repo.refreshActive()
+
+        assertEquals(RedemptionStatus.ACTIVE, dao.rows.value.getValue("c-1").status)
+        assertEquals(0, pointsSyncs)
+    }
+
+    // Lo llama Mis canjes desde viewModelScope: si se escapa la excepción, la app se cierra
+    @Test
+    fun `refrescar con una respuesta que no se puede leer deja lo guardado`() = runTest {
+        dao.upsert(entity())
+        val repo = repository(object : FakeApi() {
+            override suspend fun redemption(id: String): RedemptionDto = throw SerializationException("<html>")
         })
 
         repo.refreshActive()
