@@ -1,18 +1,13 @@
 package com.takeabreak.data.repository
 
-import com.takeabreak.data.local.BusinessEntity
-import com.takeabreak.data.local.CatalogDao
-import com.takeabreak.data.local.RewardEntity
-import com.takeabreak.data.local.RewardWithBusiness
 import com.takeabreak.data.remote.BusinessDto
 import com.takeabreak.data.remote.CatalogDto
 import com.takeabreak.data.remote.RewardDto
 import com.takeabreak.domain.model.ServerException
 import com.takeabreak.testing.FakeApi
+import com.takeabreak.testing.FakeCatalogDao
 import com.takeabreak.testing.FakeSettingsRepository
 import com.takeabreak.testing.httpError
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -21,24 +16,6 @@ import java.time.Duration
 import java.time.Instant
 
 class RewardRepositoryImplTest {
-
-    private class FakeCatalogDao : CatalogDao() {
-        val rewards = mutableMapOf<String, RewardEntity>()
-        val businesses = mutableMapOf<String, BusinessEntity>()
-        var lastUpdateValue: Long? = null
-
-        override fun observeRewards(): Flow<List<RewardWithBusiness>> = emptyFlow()
-        override suspend fun lastUpdate(): Long? = lastUpdateValue
-        override suspend fun upsertBusinesses(businesses: List<BusinessEntity>) {
-            businesses.forEach { this.businesses[it.id] = it }
-        }
-        override suspend fun upsertRewards(rewards: List<RewardEntity>) {
-            rewards.forEach { this.rewards[it.id] = it }
-        }
-        override suspend fun deleteRewards(ids: List<String>) {
-            ids.forEach { rewards.remove(it) }
-        }
-    }
 
     private val now = Instant.parse("2026-11-09T12:00:00Z")
     private val dao = FakeCatalogDao()

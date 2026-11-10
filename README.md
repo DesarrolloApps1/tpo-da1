@@ -33,6 +33,7 @@ Desde consola:
 ```bash
 ./gradlew assembleDebug
 ./gradlew testDebugUnitTest koverHtmlReportDebug
+./gradlew connectedDebugAndroidTest   # Room, workers y RNF04; necesita un emulador prendido
 ```
 
 ## Arquitectura
