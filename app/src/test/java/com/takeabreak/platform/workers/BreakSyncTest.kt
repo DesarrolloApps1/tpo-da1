@@ -35,16 +35,28 @@ class BreakSyncTest {
         }
     }
 
+    private var pointsSyncs = 0
+
     private fun breakSync(vararg pauses: Pause) = BreakSync(
         reader = FakeReader(pauses.toList()),
         settings = settings,
         syncBreaks = SyncBreaks(breaks, settings),
         getHomeSummary = GetHomeSummary(breaks, FakeRedemptionRepository(), rewards, settings),
         notifier = notifier,
+        syncPoints = { pointsSyncs++ },
     )
 
     // 27/10/2026 es martes
     private fun pause(start: String, end: String) = Pause(LocalDateTime.parse(start), LocalDateTime.parse(end))
+
+    @Test
+    fun `si sumo puntos pide informarlos y si no, no`() = runTest {
+        breakSync().invoke()
+        assertEquals(0, pointsSyncs)
+
+        breakSync(pause("2026-10-27T10:00", "2026-10-27T11:00")).invoke()
+        assertEquals(1, pointsSyncs)
+    }
 
     @Test
     fun `dos sincronizaciones a la vez guardan y avisan cada pausa una sola vez`() = runTest {

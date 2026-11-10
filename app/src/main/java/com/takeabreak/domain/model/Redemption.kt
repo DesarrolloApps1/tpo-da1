@@ -11,6 +11,11 @@ data class Redemption(
     val status: RedemptionStatus,
     val createdAt: Instant,
     val expiresAt: Instant?,
-)
+) {
+    // Un código puede haber vencido sin que el servidor lo haya informado todavía
+    fun statusAt(now: Instant): RedemptionStatus =
+        if (status == RedemptionStatus.ACTIVE && expiresAt != null && !now.isBefore(expiresAt)) RedemptionStatus.EXPIRED
+        else status
+}
 
-enum class RedemptionStatus { PENDING, ACTIVE, USED, EXPIRED, REFUNDED }
+enum class RedemptionStatus { ACTIVE, USED, EXPIRED, REFUNDED }

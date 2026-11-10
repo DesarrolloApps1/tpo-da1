@@ -26,7 +26,19 @@ class AppViewModelTest {
     private val network = FakeNetworkMonitor()
     private val granted = mutableSetOf<AppPermission>()
 
-    private fun viewModel() = AppViewModel(ObserveSession(auth), GetAccount(auth), network, { it in granted })
+    private var pointsSyncs = 0
+
+    private fun viewModel() = AppViewModel(ObserveSession(auth), GetAccount(auth), network, { it in granted }, { pointsSyncs++ })
+
+    @Test
+    fun `informa los puntos solo cuando hay sesion`() = runTest {
+        viewModel()
+        assertEquals(0, pointsSyncs)
+
+        auth.token.value = "session-token"
+
+        assertEquals(1, pointsSyncs)
+    }
 
     @Test
     fun `junta sesion, cuenta y conexion para el scaffold`() = runTest {

@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,7 +40,9 @@ fun RewardDetailScreen(
             Text("${reward.business.name} · ${reward.business.address}")
             Text(stringResource(R.string.points, reward.points))
             TextButton(onClick = viewModel::setAsGoal) { Text(stringResource(R.string.set_goal)) }
-            PillButton(stringResource(R.string.redeem), onClick = { onRedeem(reward.id) })
+            // El código lo genera el servidor: sin conexión se explica y no se descuenta nada
+            if (state.isOffline) Text(stringResource(R.string.redeem_needs_connection), textAlign = TextAlign.Center)
+            PillButton(stringResource(R.string.redeem), onClick = { onRedeem(reward.id) }, enabled = !state.isOffline)
         }
     }
 }

@@ -10,6 +10,12 @@ Documentación y diseño: [DesarrolloApps1/docs](https://github.com/DesarrolloAp
 2. Levantar el backend local (ver su README). En debug la app apunta a `http://10.0.2.2:8080/`, que es la PC vista desde el emulador.
 3. Correr la configuración `app` en un emulador o teléfono con Android 9 (API 28) o superior.
 
+En Android 17 hace falta dar el permiso de red local para que la app llegue a `10.0.2.2` (sin esto, la app dice que no hay conexión):
+
+```bash
+adb shell pm grant com.takeabreak android.permission.ACCESS_LOCAL_NETWORK
+```
+
 ### Acceso con Google
 
 El botón "Continuar con Google" necesita el client ID **web** de Google Cloud en `local.properties` (no se sube al repo):
@@ -45,6 +51,14 @@ com.takeabreak
 
 `BreakSyncWorker` corre cada 15 minutos: lee los eventos de bloqueo, `SyncBreaks` valida y guarda las pausas y, si sumaron, avisa con una notificación. Cada pausa se identifica por su hora de inicio, así que guardarla dos veces no la duplica.
 
+### Sincronización
+
+- **Catálogo:** `CatalogSyncWorker` corre cada 6 h con red y Explorar actualiza al abrir si pasó más de 1 h. Altas, cambios y bajas se aplican en una sola transacción de Room.
+- **Puntos:** `PointsSyncWorker` manda a `POST /points/daily` el total de cada día que cambió (nunca pausas ni horarios) y guarda el saldo que devuelve el servidor. Corre al abrir la app, al entrar y después de cada `BreakSync` que sumó; sin red espera a que vuelva.
+- **Canjes:** necesitan conexión, porque el servidor genera el código y valida stock y saldo. El UUID se repite en los reintentos, así un canje nunca se duplica. Sin red no se guarda nada y no se descuentan puntos.
+
+El saldo confirmado y los días informados se guardan en `SessionStore` y se borran al cerrar sesión.
+
 ### Navegación
 
 Flujo de Figma: onboarding → acceso → permisos → pestañas (Inicio, Explorar, Actividad) + Perfil, que se abre desde el avatar de Inicio. `AppNavHost` decide el destino inicial según la sesión (con sesión arranca en Inicio, o en Permisos si falta el acceso a uso) y ningún atrás vuelve al onboarding ni al acceso después de entrar. Las pestañas guardan y recuperan su pila. El aviso offline lo dibuja el scaffold para todas las pantallas.
@@ -68,10 +82,8 @@ Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio
 | Pendiente | Dónde | Historia |
 |---|---|---|
 | Racha de días | `domain/usecase/GetHomeSummary.kt` | US-02 (#4) |
-| Canje online y pendiente sin red | `data/repository/RedemptionRepositoryImpl.kt` | US-04 (#6) |
 | Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
 | Pantalla de permisos (06 y 07) | `ui/screens/PermissionsScreen.kt` | US-05 (#7) |
-| Botón "Mostrar" en Mis canjes | `ui/screens/RedemptionsScreen.kt` | US-04 (#6) |
 | Maps y ubicación | `ui/screens/ExploreScreen.kt` | US-06 (#8) |
 
 El backlog completo está en el repo `docs`, carpeta `backlog/`, y en el tablero *DA1 | Board*.

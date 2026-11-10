@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Solo en debug: desde Android 17 hace falta para llegar al backend local (10.0.2.2) -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+
     <application>
         <!-- Solo en debug: segundo ícono para la prueba técnica de la detección (US-01) -->
         <activity

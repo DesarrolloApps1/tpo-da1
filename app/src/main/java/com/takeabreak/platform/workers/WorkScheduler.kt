@@ -39,11 +39,13 @@ object WorkScheduler {
         )
     }
 
-    fun syncRedemptions(context: Context) {
+    // REPLACE: si ya había uno esperando la red, el nuevo manda los totales más recientes.
+    // Se puede cortar a la mitad porque reenviar un día no suma dos veces
+    fun syncPoints(context: Context) {
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "redemption-sync",
+            "points-sync",
             ExistingWorkPolicy.REPLACE,
-            OneTimeWorkRequestBuilder<RedemptionSyncWorker>()
+            OneTimeWorkRequestBuilder<PointsSyncWorker>()
                 .setConstraints(online)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
                 .build(),

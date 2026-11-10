@@ -15,6 +15,7 @@ import com.takeabreak.data.remote.AuthInterceptor
 import com.takeabreak.data.remote.TakeABreakApi
 import com.takeabreak.data.repository.AuthRepositoryImpl
 import com.takeabreak.data.repository.BreakRepositoryImpl
+import com.takeabreak.data.repository.PointsRepositoryImpl
 import com.takeabreak.data.repository.RedemptionRepositoryImpl
 import com.takeabreak.data.repository.RewardRepositoryImpl
 import com.takeabreak.domain.repository.AuthRepository
@@ -22,10 +23,12 @@ import com.takeabreak.domain.repository.BreakRepository
 import com.takeabreak.domain.repository.GoogleIdTokenProvider
 import com.takeabreak.domain.repository.NetworkMonitor
 import com.takeabreak.domain.repository.PermissionChecker
+import com.takeabreak.domain.repository.PointsRepository
 import com.takeabreak.domain.repository.RedemptionRepository
 import com.takeabreak.domain.repository.RewardRepository
 import com.takeabreak.domain.repository.SettingsRepository
 import com.takeabreak.domain.rules.BreakRules
+import com.takeabreak.domain.usecase.ConfirmDelivery
 import com.takeabreak.domain.usecase.GetAccount
 import com.takeabreak.domain.usecase.GetBreakHistory
 import com.takeabreak.domain.usecase.GetHomeSummary
@@ -40,6 +43,7 @@ import com.takeabreak.domain.usecase.SignInWithEmail
 import com.takeabreak.domain.usecase.SignInWithGoogle
 import com.takeabreak.domain.usecase.SignOut
 import com.takeabreak.domain.usecase.SyncBreaks
+import com.takeabreak.domain.usecase.SyncPoints
 import com.takeabreak.platform.auth.CredentialManagerGoogleProvider
 import com.takeabreak.platform.location.FusedLocationProvider
 import com.takeabreak.platform.location.LocationProvider
@@ -88,8 +92,9 @@ class AppContainer(context: Context) {
     private val breakRepository: BreakRepository by lazy { BreakRepositoryImpl(database.breakDao()) }
     private val rewardRepository: RewardRepository by lazy { RewardRepositoryImpl(api, database.catalogDao(), settings) }
     private val redemptionRepository: RedemptionRepository by lazy {
-        RedemptionRepositoryImpl(api, database.redemptionDao()) { WorkScheduler.syncRedemptions(appContext) }
+        RedemptionRepositoryImpl(api, database.redemptionDao(), ::schedulePointsSync)
     }
+    private val pointsRepository: PointsRepository by lazy { PointsRepositoryImpl(api, sessionStore) }
 
     private val authRepository: AuthRepository by lazy { AuthRepositoryImpl(api, sessionStore) }
 
@@ -125,8 +130,14 @@ class AppContainer(context: Context) {
     val signOut by lazy { SignOut(authRepository) }
 
     // Una sola instancia para todo el proceso: su Mutex es lo que evita dos sincronizaciones a la vez
-    val breakSync by lazy { BreakSync(usageEventsReader, settings, syncBreaks, getHomeSummary, notifier) }
+    val breakSync by lazy { BreakSync(usageEventsReader, settings, syncBreaks, getHomeSummary, notifier, ::schedulePointsSync) }
+    val syncPoints by lazy { SyncPoints(breakRepository, pointsRepository) }
+    val confirmDelivery by lazy { ConfirmDelivery(redemptionRepository) }
     val observeSession by lazy { ObserveSession(authRepository) }
+
+    // Queda en cola hasta que haya red, así los puntos de una tarde sin señal se informan solos
+    fun schedulePointsSync() = WorkScheduler.syncPoints(appContext)
+
     val getAccount by lazy { GetAccount(authRepository) }
 }
 

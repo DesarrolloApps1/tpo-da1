@@ -19,6 +19,7 @@ class BreakSync(
     private val syncBreaks: SyncBreaks,
     private val getHomeSummary: GetHomeSummary,
     private val notifier: Notifier,
+    private val syncPoints: () -> Unit = {},
 ) {
     private val mutex = Mutex()
 
@@ -26,6 +27,7 @@ class BreakSync(
         val pauses = reader.closedPausesSince(settings.checkpoint())
         val earned = syncBreaks(pauses).filter { it.points > 0 }
         if (earned.isEmpty()) return@withLock
+        syncPoints()
         // Con las pausas ya guardadas, el saldo dice si ya alcanza para la meta
         val summary = getHomeSummary().first()
         val reachedGoal = summary.goal?.takeIf { summary.balance >= it.points }

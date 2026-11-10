@@ -14,6 +14,9 @@ import com.takeabreak.domain.usecase.ObserveSession
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 
 // isSignedIn es null mientras se lee el token guardado: la app muestra el splash
@@ -29,17 +32,23 @@ class AppViewModel(
     getAccount: GetAccount,
     network: NetworkMonitor,
     private val permissionChecker: PermissionChecker,
+    syncPoints: () -> Unit = {},
 ) : ViewModel() {
 
     val state: StateFlow<AppState> = combine(observeSession(), getAccount(), network.isOnline, ::AppState)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppState())
+
+    // Al abrir la app y justo después de entrar, que es cuando ya hay token para informar los puntos
+    init {
+        observeSession().filter { it }.onEach { syncPoints() }.launchIn(viewModelScope)
+    }
 
     // Sin acceso a uso no se pueden contar pausas: después de entrar se pasa por Permisos
     fun needsPermissions(): Boolean = !permissionChecker.isGranted(AppPermission.USAGE_ACCESS)
 
     companion object {
         val Factory = viewModelFactory {
-            initializer { appContainer.run { AppViewModel(observeSession, getAccount, networkMonitor, permissionChecker) } }
+            initializer { appContainer.run { AppViewModel(observeSession, getAccount, networkMonitor, permissionChecker, ::schedulePointsSync) } }
         }
     }
 }

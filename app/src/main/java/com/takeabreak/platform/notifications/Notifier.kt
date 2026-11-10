@@ -15,7 +15,6 @@ import androidx.core.net.toUri
 import com.takeabreak.MainActivity
 import com.takeabreak.R
 import com.takeabreak.domain.model.BreakSession
-import com.takeabreak.domain.model.Redemption
 import com.takeabreak.domain.model.Reward
 import com.takeabreak.ui.navigation.DeepLinks
 
@@ -23,7 +22,6 @@ interface Notifier {
     // Las pausas que sumaron en una misma lectura van en un solo aviso: después de días sin abrir
     // la app pueden ser muchas. reachedGoal: el premio meta si el saldo ya alcanza, para abrirlo directo
     suspend fun breaksValidated(sessions: List<BreakSession>, reachedGoal: Reward? = null)
-    suspend fun redemptionConfirmed(redemption: Redemption)
 }
 
 class AndroidNotifier(private val context: Context) : Notifier {
@@ -51,13 +49,6 @@ class AndroidNotifier(private val context: Context) : Notifier {
 
     private fun bonusText(bonus: Int): String =
         if (bonus > 0) " " + context.getString(R.string.notification_declared_bonus, bonus) else ""
-
-    // El código queda arriba de todo en Mis canjes, que es la pantalla que lo muestra
-    override suspend fun redemptionConfirmed(redemption: Redemption) = show(
-        id = redemption.id.hashCode(),
-        text = context.getString(R.string.notification_redemption_confirmed),
-        deepLink = DeepLinks.REDEMPTIONS,
-    )
 
     // Intent explícito a MainActivity (singleTop): con la app abierta llega a onNewIntent y no se crea otra
     private fun show(id: Int, text: String, deepLink: String) {

@@ -4,7 +4,6 @@ import com.takeabreak.domain.model.BreakSession
 import com.takeabreak.domain.model.BreakStatus
 import com.takeabreak.testing.FakeNotifier
 import com.takeabreak.testing.FakeSettingsRepository
-import com.takeabreak.testing.redemption
 import com.takeabreak.testing.reward
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -25,10 +24,8 @@ class PreferenceGatedNotifierTest {
         val goal = reward("yoga")
 
         notifier.breaksValidated(listOf(session), goal)
-        notifier.redemptionConfirmed(redemption("a"))
 
         assertEquals(listOf(listOf(session) to goal), delegate.breaks)
-        assertEquals(1, delegate.redemptions.size)
     }
 
     @Test
@@ -36,10 +33,8 @@ class PreferenceGatedNotifierTest {
         settings.setNotificationsEnabled(false)
 
         notifier.breaksValidated(listOf(session))
-        notifier.redemptionConfirmed(redemption("a"))
 
         assertTrue(delegate.breaks.isEmpty())
-        assertTrue(delegate.redemptions.isEmpty())
     }
 
     @Test

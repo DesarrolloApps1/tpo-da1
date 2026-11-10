@@ -21,7 +21,14 @@ sealed interface UiState<out T> {
 enum class ErrorCause {
     NO_CONNECTION, // Reintentar o seguir sin conexión
     MISSING_PERMISSION, // Ir a Ajustes
+    OUT_OF_STOCK, // Elegir otro premio
+    INSUFFICIENT_BALANCE, // Juntar más puntos
+    REWARD_UNAVAILABLE, // Elegir otro premio
     UNKNOWN, // Reintentar
+    ;
+
+    // Sin stock o sin saldo, reintentar va a dar lo mismo
+    val canRetry: Boolean get() = this == NO_CONNECTION || this == UNKNOWN
 }
 
 fun Throwable.toErrorCause(): ErrorCause = when (this) {
