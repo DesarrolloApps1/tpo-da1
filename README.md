@@ -82,7 +82,6 @@ Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio
 
 | Pendiente | Dónde | Historia |
 |---|---|---|
-| Racha de días | `domain/usecase/GetHomeSummary.kt` | US-02 (#4) |
 | Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
 | Pantalla de permisos (06 y 07) | `ui/screens/PermissionsScreen.kt` | US-05 (#7) |
 | Maps y ubicación | `ui/screens/ExploreScreen.kt` | US-06 (#8) |
