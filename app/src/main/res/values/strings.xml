@@ -10,7 +10,42 @@
     <string name="home_today">Hoy: %1$d de %2$d pts</string>
     <string name="home_empty">Todavía no hay pausas. Dejá el teléfono y volvé más tarde.</string>
     <string name="explore_empty">Todavía no hay premios guardados.</string>
-    <string name="activity_empty">Tus pausas de los últimos 30 días van a aparecer acá.</string>
+    <string name="activity_week">Semana</string>
+    <string name="activity_month">Mes</string>
+    <string name="activity_hours_minutes">%1$d h %2$d min</string>
+    <string name="activity_hours">%1$d h</string>
+    <string name="activity_minutes">%1$d min</string>
+    <string name="activity_away_week">lejos del celu esta semana · +%1$d pts</string>
+    <string name="activity_away_month">lejos del celu este mes · +%1$d pts</string>
+    <string name="activity_empty_week">Tu semana arranca con tu primera pausa</string>
+    <string name="activity_empty_month">Tu mes arranca con tu primera pausa</string>
+    <string name="activity_goal">meta %1$s</string>
+    <string name="activity_chart_description">Minutos lejos del celu por día, con la meta diaria de %1$s</string>
+    <plurals name="activity_streak">
+        <item quantity="one">Racha de %1$d día</item>
+        <item quantity="other">Racha de %1$d días</item>
+    </plurals>
+    <string name="activity_record">Récord: %1$d</string>
+    <string name="activity_today">Hoy</string>
+    <string name="activity_yesterday">Ayer</string>
+    <string name="activity_session">%1$s – %2$s</string>
+    <string name="activity_session_detail">%1$s · %2$s</string>
+    <string name="activity_points_earned">+%1$d pts</string>
+    <string name="activity_how_title">Cómo sumás</string>
+    <string name="activity_rule_points">1 minuto de pausa = 1 punto</string>
+    <string name="activity_rule_minimum">Desde %1$d min (%2$d min el finde)</string>
+    <string name="activity_rule_rest">De %1$d a %2$d h no suma (dormir)</string>
+    <string name="activity_rule_pause_cap">Hasta %1$d h por pausa</string>
+    <string name="activity_rule_daily_cap">Hasta %1$d pts por día</string>
+    <!-- Motivo de cada pausa en lenguaje simple, para que ninguna regla quede oculta (principio P4) -->
+    <string name="reason_valid">pausa válida</string>
+    <string name="reason_declared_bonus">pausa válida · +%1$d de bonus</string>
+    <string name="reason_pause_cap">más de %1$d h: suma hasta %1$d h</string>
+    <string name="reason_too_short">muy corta: mínimo %1$d min</string>
+    <string name="reason_too_short_weekend">finde: mínimo %1$d min</string>
+    <string name="reason_rest_time">horario de descanso · no suma</string>
+    <string name="reason_daily_cap">ya llegaste al tope de hoy</string>
+    <string name="reason_clock_changed">cambió la hora del teléfono · no suma</string>
     <string name="redemptions_empty">Todavía no canjeaste ningún premio.</string>
     <string name="redemptions_unknown_reward">Premio que ya no está disponible</string>
     <string name="redemptions_show">Mostrar</string>
