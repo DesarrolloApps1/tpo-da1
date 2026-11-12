@@ -118,13 +118,13 @@ class AppContainer(context: Context, private val baseUrl: String = BuildConfig.B
     // Una sola configuración de reglas para toda la app
     val breakRules by lazy { BreakRules() }
     val syncBreaks by lazy { SyncBreaks(breakRepository, settings, breakRules) }
-    val getHomeSummary by lazy { GetHomeSummary(breakRepository, redemptionRepository, rewardRepository, settings) }
+    val getHomeSummary by lazy { GetHomeSummary(breakRepository, redemptionRepository, rewardRepository, settings, pointsRepository) }
     val getRewards by lazy { GetRewards(rewardRepository) }
     val redeemReward by lazy { RedeemReward(redemptionRepository) }
     val setGoal by lazy { SetGoal(settings, breakRules) }
     val setNotificationsEnabled by lazy { SetNotificationsEnabled(settings) }
     val getProfile by lazy { GetProfile(authRepository, breakRepository, redemptionRepository, rewardRepository, settings) }
-    val getBreakHistory by lazy { GetBreakHistory(breakRepository) }
+    val getBreakHistory by lazy { GetBreakHistory(breakRepository, settings) }
     val getRedemptions by lazy { GetRedemptions(redemptionRepository) }
     val signInWithGoogle by lazy { SignInWithGoogle(authRepository) }
     val signInWithEmail by lazy { SignInWithEmail(authRepository) }
