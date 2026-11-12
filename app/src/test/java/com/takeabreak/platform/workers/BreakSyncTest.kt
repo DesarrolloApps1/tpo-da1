@@ -6,6 +6,7 @@ import com.takeabreak.domain.usecase.SyncBreaks
 import com.takeabreak.platform.usage.UsageEventsReader
 import com.takeabreak.testing.FakeBreakRepository
 import com.takeabreak.testing.FakeNotifier
+import com.takeabreak.testing.FakePointsRepository
 import com.takeabreak.testing.FakeRedemptionRepository
 import com.takeabreak.testing.FakeRewardRepository
 import com.takeabreak.testing.FakeSettingsRepository
@@ -41,7 +42,7 @@ class BreakSyncTest {
         reader = FakeReader(pauses.toList()),
         settings = settings,
         syncBreaks = SyncBreaks(breaks, settings),
-        getHomeSummary = GetHomeSummary(breaks, FakeRedemptionRepository(), rewards, settings),
+        getHomeSummary = GetHomeSummary(breaks, FakeRedemptionRepository(), rewards, settings, FakePointsRepository()),
         notifier = notifier,
         syncPoints = { pointsSyncs++ },
     )
