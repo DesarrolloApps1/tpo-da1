@@ -21,16 +21,19 @@ import com.takeabreak.presentation.reward.RewardDetailViewModel
 import com.takeabreak.ui.components.PillButton
 import com.takeabreak.ui.components.StateContent
 
-// TODO: estado "no alcanza" con lo que falta en puntos y horas (frame 18)
+// Frames 17 y 18: con saldo suficiente se puede canjear; si no, se dice cuánto falta
 @Composable
 fun RewardDetailScreen(
     onRedeem: (String) -> Unit,
     viewModel: RewardDetailViewModel = viewModel(factory = RewardDetailViewModel.Factory),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val balance by viewModel.balance.collectAsStateWithLifecycle()
 
     StateContent(state, emptyText = stringResource(R.string.reward_not_found)) { reward ->
         if (reward == null) return@StateContent
+        val missing = reward.points - balance
+        val affordable = missing <= 0
         Column(
             Modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
@@ -39,10 +42,21 @@ fun RewardDetailScreen(
             Text(reward.title, style = MaterialTheme.typography.headlineMedium)
             Text("${reward.business.name} · ${reward.business.address}")
             Text(stringResource(R.string.points, reward.points))
+            if (!affordable) {
+                Text(
+                    stringResource(R.string.reward_missing, missing, durationLabel(missing)),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             TextButton(onClick = viewModel::setAsGoal) { Text(stringResource(R.string.set_goal)) }
             // El código lo genera el servidor: sin conexión se explica y no se descuenta nada
             if (state.isOffline) Text(stringResource(R.string.redeem_needs_connection), textAlign = TextAlign.Center)
-            PillButton(stringResource(R.string.redeem), onClick = { onRedeem(reward.id) }, enabled = !state.isOffline)
+            PillButton(
+                stringResource(R.string.redeem),
+                onClick = { onRedeem(reward.id) },
+                enabled = affordable && !state.isOffline,
+            )
         }
     }
 }

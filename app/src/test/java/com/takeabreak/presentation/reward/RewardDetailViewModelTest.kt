@@ -1,9 +1,13 @@
 package com.takeabreak.presentation.reward
 
+import com.takeabreak.domain.usecase.GetHomeSummary
 import com.takeabreak.domain.usecase.GetRewards
 import com.takeabreak.domain.usecase.SetGoal
 import com.takeabreak.presentation.UiState
+import com.takeabreak.testing.FakeBreakRepository
 import com.takeabreak.testing.FakeNetworkMonitor
+import com.takeabreak.testing.FakePointsRepository
+import com.takeabreak.testing.FakeRedemptionRepository
 import com.takeabreak.testing.FakeRewardRepository
 import com.takeabreak.testing.FakeSettingsRepository
 import com.takeabreak.testing.MainDispatcherRule
@@ -26,7 +30,8 @@ class RewardDetailViewModelTest {
     private val settings = FakeSettingsRepository()
 
     private fun TestScope.subscribed(id: String): RewardDetailViewModel {
-        val vm = RewardDetailViewModel(id, GetRewards(rewards), SetGoal(settings), FakeNetworkMonitor())
+        val home = GetHomeSummary(FakeBreakRepository(), FakeRedemptionRepository(), rewards, settings, FakePointsRepository())
+        val vm = RewardDetailViewModel(id, GetRewards(rewards), home, SetGoal(settings), FakeNetworkMonitor())
         vm.state.launchIn(CoroutineScope(backgroundScope.coroutineContext + UnconfinedTestDispatcher(testScheduler)))
         return vm
     }

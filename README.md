@@ -78,13 +78,26 @@ Cerrar sesión borra el token y los datos de la cuenta, pero no las pausas ni lo
 
 ## Estado
 
-Esqueleto de la primera iteración. Compila y navega, pero la lógica de negocio está marcada con `TODO("...")`:
+Requisitos funcionales de la consigna:
 
-| Pendiente | Dónde | Historia |
+| RF | Qué hace | Estado |
 |---|---|---|
-| Fuentes, pantallas y estados de Figma | `ui/` | US-05 (#7), US-06 (#8) |
-| Pantalla de permisos (06 y 07) | `ui/screens/PermissionsScreen.kt` | US-05 (#7) |
-| Maps y ubicación | `ui/screens/ExploreScreen.kt` | US-06 (#8) |
+| RF01 | Detecta pausas con el bloqueo de pantalla y las valida con las reglas de puntos | Implementado y con tests de dominio |
+| RF02 | Saldo, meta, historial por día y racha | Implementado |
+| RF03 | Catálogo de premios con sincronización offline | Lista implementada. Mapa y orden por distancia pendientes (ver abajo) |
+| RF04 | Canje con código del servidor y confirmación de entrega con el PIN del comercio | Implementado. El canje necesita conexión |
+
+Pendiente, con su motivo:
+
+| Pendiente | Dónde | Motivo |
+|---|---|---|
+| Mapa con Google Maps y orden por distancia | `ui/screens/ExploreScreen.kt` | Falta la API key de Maps en `local.properties` del equipo |
+| Fuentes Bricolage Grotesque y DM Sans | `ui/theme/Theme.kt` | Pendiente de agregar los archivos a `res/font` |
+| Onboarding solo en el primer uso | `ui/navigation/AppNavHost.kt` | Falta el flag en DataStore |
+| Pantalla de permisos completa (notificaciones, batería, permiso rechazado) | `ui/screens/PermissionsScreen.kt` | Solo cubre el acceso a uso |
+| Pruebas instrumentadas y en dispositivo real (`connectedDebugAndroidTest`, TalkBack, prueba con usuarios) | `androidTest/` | Se corren en un teléfono o emulador real |
+
+Limitaciones conocidas: una app modificada puede informar hasta 240 pts por día y cuenta (Play Integrity queda como trabajo futuro); la notificación de una pausa puede demorarse; no hay pagos reales; los comercios y premios son datos de ejemplo.
 
 El backlog completo está en el repo `docs`, carpeta `backlog/`, y en el tablero *DA1 | Board*.
 

@@ -156,4 +156,25 @@
     <string name="profile_tile_manual">Para agregarlo, abrí los ajustes rápidos, tocá el lápiz y arrastrá "Me tomo un break".</string>
     <string name="tile_label">Me tomo un break</string>
     <string name="tile_subtitle_active">Bloqueá el teléfono</string>
+
+    <string name="home_streak">Racha: %1$d días seguidos</string>
+    <string name="home_affordable">Te alcanza hoy</string>
+    <string name="home_goal">Tu meta: %1$s</string>
+    <string name="home_goal_reached">Ya te alcanza para tu meta.</string>
+    <string name="home_goal_missing">Te faltan %1$d pts · %2$s de pausa</string>
+    <string name="reward_missing">Te faltan %1$d pts · %2$s de pausa</string>
+
+    <string name="redeem_hold">Mantené presionado para confirmar</string>
+    <string name="redemptions_deliver">Entregar al comercio</string>
+    <string name="deliver_title">Confirmar entrega</string>
+    <string name="deliver_subtitle">El cajero escribe el PIN del local</string>
+    <string name="deliver_wrong_pin">PIN incorrecto. Te quedan %1$d intentos.</string>
+    <string name="deliver_delete">Borrar</string>
+    <string name="deliver_sending">Confirmando…</string>
+    <string name="deliver_done">Entrega confirmada. El canje quedó usado.</string>
+    <string name="deliver_rejected">Este canje se rechazó por demasiados PIN incorrectos. Los puntos volvieron al saldo.</string>
+    <string name="deliver_already_used">Este código ya se usó.</string>
+    <string name="deliver_expired">Este código venció. Los puntos volvieron al saldo.</string>
+    <string name="deliver_no_connection">Sin conexión. Hace falta internet para confirmar la entrega.</string>
+    <string name="deliver_failed">No pudimos confirmar la entrega. Probá de nuevo.</string>
 </resources>
