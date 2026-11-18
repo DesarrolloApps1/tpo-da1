@@ -57,6 +57,12 @@ kover {
         filters {
             includes { packages("com.takeabreak.domain") }
         }
+        // RNF09: koverVerifyDebug falla si domain baja del 80 % de líneas cubiertas
+        verify {
+            rule("Cobertura de domain") {
+                minBound(80)
+            }
+        }
     }
 }
 
