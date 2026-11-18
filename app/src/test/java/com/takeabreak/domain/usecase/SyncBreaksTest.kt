@@ -274,4 +274,12 @@ class SyncBreaksTest {
         assertEquals(230, before)
         assertEquals(before, breaks.sessions.value.sumOf { it.points })
     }
+
+    @Test
+    fun `una pausa con musica o una llamada queda con su motivo y no suma`() = runTest {
+        val start = LocalDateTime.parse("2026-10-27T10:00")
+        val saved = syncBreaks(listOf(Pause(start, start.plusMinutes(60), serviceMinutes = 45)))
+
+        assertEquals(listOf(Triple(60, 0, BreakStatus.SERVICE_ACTIVE)), saved.summary())
+    }
 }

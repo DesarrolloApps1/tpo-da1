@@ -13,6 +13,12 @@ class BreakRules(val config: BreakRulesConfig = BreakRulesConfig()) {
 
     fun validMinutes(pause: Pause): Int = pause.minutesOutside(restFrom = config.restFrom, restTo = config.restTo)
 
+    // Música, una llamada o navegación sonando: el teléfono estaba bloqueado pero en uso
+    fun hadActiveService(pause: Pause): Boolean {
+        val minutes = Duration.between(pause.start, pause.end).toMinutes()
+        return minutes > 0 && pause.serviceMinutes * 100 >= config.serviceSharePercent * minutes
+    }
+
     // Si la pausa supera el tope por pausa
     fun isOverPauseCap(validMinutes: Int): Boolean = validMinutes > config.pauseCapMinutes
 
@@ -22,7 +28,7 @@ class BreakRules(val config: BreakRulesConfig = BreakRulesConfig()) {
 
     // declared: la pausa empezó dentro de la ventana de un break declarado en el tile
     fun points(pause: Pause, pointsToday: Int, declared: Boolean = false): Int {
-        if (pause.clockChanged) return 0
+        if (pause.clockChanged || hadActiveService(pause)) return 0
         val countable = validMinutes(pause)
         if (countable < minMinutes(pause)) return 0
         val base = countable.coerceAtMost(config.pauseCapMinutes)

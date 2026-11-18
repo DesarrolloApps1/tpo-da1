@@ -46,6 +46,7 @@
     <string name="reason_rest_time">horario de descanso · no suma</string>
     <string name="reason_daily_cap">ya llegaste al tope de hoy</string>
     <string name="reason_clock_changed">cambió la hora del teléfono · no suma</string>
+    <string name="reason_service_active">había música, una llamada o navegación · no suma</string>
     <string name="redemptions_empty">Todavía no canjeaste ningún premio.</string>
     <string name="redemptions_unknown_reward">Premio que ya no está disponible</string>
     <string name="redemptions_show">Mostrar</string>

@@ -81,4 +81,19 @@ class BreakRulesTest {
         assertEquals(false, rules.isDeclarationActive(at, at.plusSeconds(120)))
         assertEquals(false, rules.isDeclarationActive(at, at.minusSeconds(1)))
     }
+
+    @Test
+    fun `con un servicio activo la mitad de la pausa o mas no suma`() {
+        val start = LocalDateTime.parse("2026-10-27T10:00")
+        assertEquals(0, rules.points(Pause(start, start.plusMinutes(60), serviceMinutes = 30), pointsToday = 0))
+        assertEquals(60, rules.points(Pause(start, start.plusMinutes(60), serviceMinutes = 29), pointsToday = 0))
+    }
+
+    @Test
+    fun `el porcentaje del servicio activo es un parametro`() {
+        val strict = BreakRules(BreakRulesConfig(serviceSharePercent = 10))
+        val start = LocalDateTime.parse("2026-10-27T10:00")
+
+        assertEquals(0, strict.points(Pause(start, start.plusMinutes(60), serviceMinutes = 6), pointsToday = 0))
+    }
 }

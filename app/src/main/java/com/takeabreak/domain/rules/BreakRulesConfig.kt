@@ -18,4 +18,8 @@ data class BreakRulesConfig(
     val tileBonusPercent: Int = 10,
     // Tiempo desde que se toca el tile en el que tiene que empezar la pausa; después se descarta
     val tileWindowMinutes: Int = 2,
+    // Servicio de otra app (música, llamada, navegación): cuenta si arrancó hasta esto antes de
+    // bloquear o durante la pausa, y la anula si estuvo activo al menos este porcentaje de la pausa
+    val serviceLookbackMinutes: Int = 30,
+    val serviceSharePercent: Int = 50,
 )

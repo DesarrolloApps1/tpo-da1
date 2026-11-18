@@ -14,4 +14,4 @@ data class BreakSession(
 )
 
 // Por qué una pausa sumó o no
-enum class BreakStatus { VALID, PAUSE_CAP, TOO_SHORT, REST_TIME, DAILY_CAP, CLOCK_CHANGED }
+enum class BreakStatus { VALID, PAUSE_CAP, TOO_SHORT, REST_TIME, DAILY_CAP, CLOCK_CHANGED, SERVICE_ACTIVE }
