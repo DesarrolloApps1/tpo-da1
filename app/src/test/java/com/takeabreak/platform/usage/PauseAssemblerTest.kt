@@ -116,4 +116,49 @@ class PauseAssemblerTest {
     fun `sin eventos no hay pausas`() {
         assertEquals(emptyList<Pause>(), PauseAssembler.closedPauses(emptyList(), zone))
     }
+
+    private fun serviceStart(at: String, key: Int = 1) = ScreenEvent(LocalDateTime.parse(at).toInstant(zone), ScreenEvent.Kind.SERVICE_START, key)
+    private fun serviceStop(at: String, key: Int = 1) = ScreenEvent(LocalDateTime.parse(at).toInstant(zone), ScreenEvent.Kind.SERVICE_STOP, key)
+
+    @Test
+    fun `un servicio que arranco poco antes de bloquear cuenta sus minutos dentro de la pausa`() {
+        // Música puesta a las 9:50, bloqueo a las 10:00, la música para a las 10:40
+        val events = listOf(serviceStart("2026-10-27T09:50"), lock("2026-10-27T10:00"), serviceStop("2026-10-27T10:40"), unlock("2026-10-27T11:00"))
+
+        assertEquals(40, PauseAssembler.closedPauses(events, zone).single().serviceMinutes)
+    }
+
+    @Test
+    fun `un servicio que corre desde hace horas no cuenta`() {
+        // Por ejemplo una VPN o el contador de pasos
+        val events = listOf(serviceStart("2026-10-27T06:00"), lock("2026-10-27T10:00"), unlock("2026-10-27T11:00"))
+
+        assertEquals(0, PauseAssembler.closedPauses(events, zone).single().serviceMinutes)
+    }
+
+    @Test
+    fun `un servicio que arranca durante la pausa cuenta hasta el desbloqueo`() {
+        val events = listOf(lock("2026-10-27T10:00"), serviceStart("2026-10-27T10:20"), unlock("2026-10-27T11:00"))
+
+        assertEquals(40, PauseAssembler.closedPauses(events, zone).single().serviceMinutes)
+    }
+
+    @Test
+    fun `dos servicios superpuestos no cuentan dos veces`() {
+        val events = listOf(
+            lock("2026-10-27T10:00"),
+            serviceStart("2026-10-27T10:00", key = 1), serviceStart("2026-10-27T10:10", key = 2),
+            serviceStop("2026-10-27T10:30", key = 1), serviceStop("2026-10-27T10:40", key = 2),
+            unlock("2026-10-27T11:00"),
+        )
+
+        assertEquals(40, PauseAssembler.closedPauses(events, zone).single().serviceMinutes)
+    }
+
+    @Test
+    fun `un servicio que termino antes de la pausa no cuenta`() {
+        val events = listOf(serviceStart("2026-10-27T09:40"), serviceStop("2026-10-27T09:55"), lock("2026-10-27T10:00"), unlock("2026-10-27T11:00"))
+
+        assertEquals(0, PauseAssembler.closedPauses(events, zone).single().serviceMinutes)
+    }
 }

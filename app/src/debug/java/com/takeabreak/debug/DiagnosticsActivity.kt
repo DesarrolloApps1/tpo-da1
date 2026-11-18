@@ -96,7 +96,7 @@ class DiagnosticsActivity : ComponentActivity() {
             val long = pauses.filter { Duration.between(it.start, it.end).toMinutes() >= 30 }
             appendLine("Pausas armadas: ${pauses.size}. De 30 min o más: ${long.size}")
             long.forEach {
-                appendLine("  ${FORMAT.format(it.start)} → ${FORMAT.format(it.end)} · ${Duration.between(it.start, it.end).toMinutes()} min · ${BreakRules().validMinutes(it)} válidos")
+                appendLine("  ${FORMAT.format(it.start)} → ${FORMAT.format(it.end)} · ${Duration.between(it.start, it.end).toMinutes()} min · ${BreakRules().validMinutes(it)} válidos · ${it.serviceMinutes} con servicio")
             }
         }
     }
@@ -149,6 +149,8 @@ class DiagnosticsActivity : ComponentActivity() {
             UsageEvents.Event.KEYGUARD_HIDDEN to "KEYGUARD_HIDDEN",
             UsageEvents.Event.DEVICE_SHUTDOWN to "DEVICE_SHUTDOWN",
             UsageEvents.Event.DEVICE_STARTUP to "DEVICE_STARTUP",
+            UsageEvents.Event.FOREGROUND_SERVICE_START to "FOREGROUND_SERVICE_START",
+            UsageEvents.Event.FOREGROUND_SERVICE_STOP to "FOREGROUND_SERVICE_STOP",
         )
     }
 }
