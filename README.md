@@ -32,7 +32,7 @@ Desde consola:
 
 ```bash
 ./gradlew assembleDebug
-./gradlew testDebugUnitTest koverHtmlReportDebug
+./gradlew testDebugUnitTest koverVerifyDebug koverHtmlReportDebug   # falla si domain baja del 80 %
 ./gradlew connectedDebugAndroidTest   # Room, workers y RNF04; necesita un emulador prendido
 ```
 
