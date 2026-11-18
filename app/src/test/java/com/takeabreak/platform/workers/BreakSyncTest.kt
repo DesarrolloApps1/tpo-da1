@@ -12,6 +12,7 @@ import com.takeabreak.testing.FakeRewardRepository
 import com.takeabreak.testing.FakeSettingsRepository
 import com.takeabreak.testing.reward
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import kotlinx.coroutines.delay
@@ -42,7 +43,9 @@ class BreakSyncTest {
         reader = FakeReader(pauses.toList()),
         settings = settings,
         syncBreaks = SyncBreaks(breaks, settings),
-        getHomeSummary = GetHomeSummary(breaks, FakeRedemptionRepository(), rewards, settings, FakePointsRepository()),
+        getHomeSummary = GetHomeSummary(
+            breaks, FakeRedemptionRepository(), rewards, settings, FakePointsRepository(), today = { LocalDate.parse("2026-10-27") },
+        ),
         notifier = notifier,
         syncPoints = { pointsSyncs++ },
     )
