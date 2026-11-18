@@ -74,8 +74,10 @@ class FakeBreakRepository : BreakRepository {
 
     override suspend fun pointsOn(day: LocalDate): Int = sessions.value.filter { it.start.toLocalDate() == day }.sumOf { it.points }
 
+    // Como el DAO: reemplaza la pausa con el mismo inicio
     override suspend fun save(sessions: List<BreakSession>) {
-        this.sessions.value += sessions
+        val starts = sessions.map { it.start }.toSet()
+        this.sessions.value = this.sessions.value.filter { it.start !in starts } + sessions
     }
 }
 
@@ -100,7 +102,14 @@ class FakeRedemptionRepository : RedemptionRepository {
         return RedeemResult.Success(result)
     }
 
-    override suspend fun confirmDelivery(id: String, pin: String): DeliveryResult = DeliveryResult.Unknown
+    // Lo que devuelve confirmDelivery y los pedidos que recibió
+    var nextDelivery: DeliveryResult = DeliveryResult.Unknown
+    val deliveries = mutableListOf<Pair<String, String>>()
+
+    override suspend fun confirmDelivery(id: String, pin: String): DeliveryResult {
+        deliveries += id to pin
+        return nextDelivery
+    }
 
     override suspend fun refreshActive() {
         refreshCalls++

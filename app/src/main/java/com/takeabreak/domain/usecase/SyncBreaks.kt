@@ -24,9 +24,19 @@ class SyncBreaks(
         // El break declarado en el tile es para la primera pausa que empieza después de tocarlo
         var declaredAt = settings.declaredBreakAt.first()
         var declarationUsed = false
-        val sessions = pauses.filter(rules::isRecorded).sortedBy { it.start }.map { pause ->
+        val recorded = pauses.filter(rules::isRecorded).sortedBy { it.start }
+        // Si el proceso murió entre guardar y mover el checkpoint, estas pausas se vuelven a leer y ya
+        // están guardadas (RNF04). Sus propios puntos no cuentan para el tope: si contaran, el upsert
+        // las reemplazaría con menos puntos
+        val starts = recorded.map { it.start }.toSet()
+        val alreadySaved = recorded.firstOrNull()
+            ?.let { breaks.observeSince(it.start.toLocalDate()).first().filter { saved -> saved.start in starts } }
+            .orEmpty()
+        val sessions = recorded.map { pause ->
             val day = pause.start.toLocalDate()
-            val pointsToday = pointsByDay.getOrPut(day) { breaks.pointsOn(day) }
+            val pointsToday = pointsByDay.getOrPut(day) {
+                breaks.pointsOn(day) - alreadySaved.filter { it.start.toLocalDate() == day }.sumOf { it.points }
+            }
             val validMinutes = rules.validMinutes(pause)
             val startedAt = pause.start.atZone(ZoneId.systemDefault()).toInstant()
             val declaration = declaredAt?.takeIf { !startedAt.isBefore(it) }
