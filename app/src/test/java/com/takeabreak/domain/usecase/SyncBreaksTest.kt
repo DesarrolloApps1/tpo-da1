@@ -250,4 +250,28 @@ class SyncBreaksTest {
         assertEquals(0, saved.single().bonusPoints)
         assertEquals(60, saved.single().points)
     }
+
+    @Test
+    fun `releer una pausa ya guardada no la duplica ni le baja los puntos`() = runTest {
+        // RNF04: el proceso muere después de guardar y antes de mover el checkpoint, y la tanda se vuelve a leer
+        val batch = listOf(pause("2026-10-27T09:00", "2026-10-27T12:20"), pause("2026-10-27T15:00", "2026-10-27T16:00"))
+        val first = syncBreaks(batch)
+
+        val again = syncBreaks(batch)
+
+        assertEquals(listOf(Triple(200, 180, BreakStatus.PAUSE_CAP), Triple(60, 60, BreakStatus.VALID)), first.summary())
+        assertEquals(first, again)
+        assertEquals(2, breaks.sessions.value.size)
+    }
+
+    @Test
+    fun `releer solo la ultima pausa cerca del tope mantiene sus puntos`() = runTest {
+        syncBreaks(listOf(pause("2026-10-27T09:00", "2026-10-27T12:00"), pause("2026-10-27T13:00", "2026-10-27T13:50")))
+        val before = breaks.sessions.value.sumOf { it.points }
+
+        syncBreaks(listOf(pause("2026-10-27T13:00", "2026-10-27T13:50")))
+
+        assertEquals(230, before)
+        assertEquals(before, breaks.sessions.value.sumOf { it.points })
+    }
 }
