@@ -177,4 +177,6 @@
     <string name="deliver_expired">Este código venció. Los puntos volvieron al saldo.</string>
     <string name="deliver_no_connection">Sin conexión. Hace falta internet para confirmar la entrega.</string>
     <string name="deliver_failed">No pudimos confirmar la entrega. Probá de nuevo.</string>
+    <string name="home_pending">%1$d pts por confirmar. Se confirman solos cuando hay conexión; el aviso puede demorarse, los puntos no se pierden.</string>
+    <string name="redeem_now">Ahora %1$s</string>
 </resources>

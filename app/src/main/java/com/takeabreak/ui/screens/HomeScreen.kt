@@ -42,11 +42,15 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item { Text(stringResource(R.string.points, summary.balance), style = MaterialTheme.typography.displayMedium) }
+            // Lo ganado que el servidor todavía no confirmó se ve aparte: todavía no se puede gastar
+            if (summary.pendingPoints > 0) {
+                item { Text(stringResource(R.string.home_pending, summary.pendingPoints), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+            }
             item { DayProgress(summary) }
             if (summary.streakDays > 0) {
                 item { Text(stringResource(R.string.home_streak, summary.streakDays), style = MaterialTheme.typography.titleMedium) }
             }
-            summary.goal?.let { goal -> item { GoalCard(goal, summary.balance, onRewardClick) } }
+            summary.goal?.let { goal -> item { GoalCard(goal, summary.spendable, onRewardClick) } }
             if (summary.affordable.isNotEmpty()) {
                 item { Text(stringResource(R.string.home_affordable), style = MaterialTheme.typography.titleMedium) }
                 items(summary.affordable, key = { it.id }) { reward ->
@@ -74,7 +78,8 @@ private fun DayProgress(summary: HomeSummary) {
     }
 }
 
-// Cuánto falta para el premio meta, en puntos y en tiempo (1 punto = 1 minuto sin uso)
+// Cuánto falta para el premio meta, en puntos y en tiempo (1 punto = 1 minuto sin uso).
+// Se compara con el saldo que se puede gastar, el mismo que valida el servidor al canjear
 @Composable
 private fun GoalCard(goal: Reward, balance: Int, onRewardClick: (String) -> Unit) {
     Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,8 +52,8 @@ fun DeliverScreen(
             DeliverViewModel.Phase.Rejected -> Result(stringResource(R.string.deliver_rejected), onDone)
             DeliverViewModel.Phase.AlreadyUsed -> Result(stringResource(R.string.deliver_already_used), onDone)
             DeliverViewModel.Phase.Expired -> Result(stringResource(R.string.deliver_expired), onDone)
-            DeliverViewModel.Phase.NoConnection -> Result(stringResource(R.string.deliver_no_connection), onDone)
-            DeliverViewModel.Phase.Failed -> Result(stringResource(R.string.deliver_failed), onDone)
+            DeliverViewModel.Phase.NoConnection -> Result(stringResource(R.string.deliver_no_connection), onDone, viewModel::retry)
+            DeliverViewModel.Phase.Failed -> Result(stringResource(R.string.deliver_failed), onDone, viewModel::retry)
             DeliverViewModel.Phase.Sending -> Text(stringResource(R.string.deliver_sending))
             DeliverViewModel.Phase.Entering -> Entering(state, viewModel::digit, viewModel::delete)
         }
@@ -107,9 +108,14 @@ private fun Keypad(label: String, description: String, onClick: () -> Unit) {
 }
 
 @Composable
-private fun Result(message: String, onDone: () -> Unit) {
+private fun Result(message: String, onDone: () -> Unit, onRetry: (() -> Unit)? = null) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(message, style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
-        PillButton(stringResource(R.string.done), onClick = onDone)
+        if (onRetry != null) {
+            PillButton(stringResource(R.string.retry), onClick = onRetry)
+            TextButton(onClick = onDone) { Text(stringResource(R.string.done)) }
+        } else {
+            PillButton(stringResource(R.string.done), onClick = onDone)
+        }
     }
 }
