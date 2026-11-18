@@ -268,6 +268,7 @@ private fun reason(session: BreakSession, rules: BreakRulesConfig): String = whe
     BreakStatus.REST_TIME -> stringResource(R.string.reason_rest_time)
     BreakStatus.DAILY_CAP -> stringResource(R.string.reason_daily_cap)
     BreakStatus.CLOCK_CHANGED -> stringResource(R.string.reason_clock_changed)
+    BreakStatus.SERVICE_ACTIVE -> stringResource(R.string.reason_service_active)
 }
 
 // Figma 24: con el historial vacío se explica cómo se suman puntos, con los valores de las reglas

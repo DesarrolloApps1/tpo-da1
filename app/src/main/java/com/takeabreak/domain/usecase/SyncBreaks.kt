@@ -64,6 +64,7 @@ class SyncBreaks(
         val minMinutes = rules.minMinutes(pause)
         return when {
             pause.clockChanged -> BreakStatus.CLOCK_CHANGED
+            rules.hadActiveService(pause) -> BreakStatus.SERVICE_ACTIVE
             points > 0 && rules.isOverPauseCap(validMinutes) -> BreakStatus.PAUSE_CAP
             points > 0 -> BreakStatus.VALID
             validMinutes >= minMinutes -> BreakStatus.DAILY_CAP

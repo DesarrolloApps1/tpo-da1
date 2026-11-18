@@ -2,11 +2,13 @@ package com.takeabreak.domain.usecase
 
 import com.takeabreak.domain.model.BreakSession
 import com.takeabreak.domain.model.BreakStatus
+import com.takeabreak.domain.model.RedemptionStatus
 import com.takeabreak.testing.FakeBreakRepository
 import com.takeabreak.testing.FakePointsRepository
 import com.takeabreak.testing.FakeRedemptionRepository
 import com.takeabreak.testing.FakeRewardRepository
 import com.takeabreak.testing.FakeSettingsRepository
+import com.takeabreak.testing.redemption
 import com.takeabreak.testing.reward
 import java.time.LocalDate
 import kotlinx.coroutines.flow.first
@@ -20,8 +22,9 @@ class GetHomeSummaryTest {
     private val breaks = FakeBreakRepository()
     private val points = FakePointsRepository()
     private val rewards = FakeRewardRepository()
+    private val redemptions = FakeRedemptionRepository()
     private val getHomeSummary = GetHomeSummary(
-        breaks, FakeRedemptionRepository(), rewards, FakeSettingsRepository(), points, today = { today },
+        breaks, redemptions, rewards, FakeSettingsRepository(), points, today = { today },
     )
 
     private fun session(daysAgo: Long, points: Int) = today.minusDays(daysAgo).atTime(15, 0).let {
@@ -71,5 +74,16 @@ class GetHomeSummaryTest {
 
         assertEquals(60, summary.pointsToday)
         assertEquals(3, summary.streakDays)
+    }
+
+    @Test
+    fun `sin sincronizar un canje devuelto vuelve al saldo`() = runTest {
+        breaks.sessions.value = listOf(session(1, 200))
+        redemptions.redemptions.value = listOf(
+            redemption("usado", points = 50, status = RedemptionStatus.USED),
+            redemption("devuelto", points = 80, status = RedemptionStatus.REFUNDED),
+        )
+
+        assertEquals(150, getHomeSummary().first().balance)
     }
 }

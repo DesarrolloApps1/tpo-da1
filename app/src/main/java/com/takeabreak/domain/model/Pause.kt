@@ -5,8 +5,14 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 // Intervalo cerrado entre que se bloquea y se desbloquea el teléfono.
-// clockChanged: la hora del sistema cambió en el medio, así que la duración no es confiable
-data class Pause(val start: LocalDateTime, val end: LocalDateTime, val clockChanged: Boolean = false) {
+// clockChanged: la hora del sistema cambió en el medio, así que la duración no es confiable.
+// serviceMinutes: minutos de la pausa con un servicio reciente de otra app activo (música, llamada, navegación)
+data class Pause(
+    val start: LocalDateTime,
+    val end: LocalDateTime,
+    val clockChanged: Boolean = false,
+    val serviceMinutes: Int = 0,
+) {
 
     val isWeekend: Boolean
         get() = start.dayOfWeek == DayOfWeek.SATURDAY || start.dayOfWeek == DayOfWeek.SUNDAY

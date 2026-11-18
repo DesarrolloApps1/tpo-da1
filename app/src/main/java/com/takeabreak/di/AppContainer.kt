@@ -62,6 +62,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
+import java.time.Duration
 
 // Inyección manual: cada dependencia se crea una sola vez, cuando se necesita
 // baseUrl y database quedan a mano para que los tests instrumentados usen un servidor falso
@@ -101,7 +102,9 @@ class AppContainer(context: Context, private val baseUrl: String = BuildConfig.B
 
     // Plataforma
     val networkMonitor: NetworkMonitor by lazy { AndroidNetworkMonitor(appContext) }
-    val usageEventsReader: UsageEventsReader by lazy { AndroidUsageEventsReader(appContext) }
+    val usageEventsReader: UsageEventsReader by lazy {
+        AndroidUsageEventsReader(appContext, Duration.ofMinutes(breakRules.config.serviceLookbackMinutes.toLong()))
+    }
     // El interruptor de Perfil envuelve al notificador real
     val notifier: Notifier by lazy { PreferenceGatedNotifier(AndroidNotifier(appContext), settings) }
     val locationProvider: LocationProvider by lazy { FusedLocationProvider(appContext) }
