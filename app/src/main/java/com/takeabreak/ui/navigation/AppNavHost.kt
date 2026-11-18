@@ -153,8 +153,20 @@ fun AppNavHost(
                 composable<Route.RewardDetail>(deepLinks = listOf(navDeepLink<Route.RewardDetail>(basePath = DeepLinks.REWARD))) {
                     RewardDetailScreen(onRedeem = { navController.navigate(Route.Redeem(it)) })
                 }
-                composable<Route.Redeem> { RedeemScreen(onDone = { navController.popBackStack(Route.Home, inclusive = false) }) }
-                composable<Route.Deliver> { DeliverScreen(onDone = { navController.navigateUp() }) }
+                composable<Route.Redeem> {
+                    RedeemScreen(
+                        onDone = { navController.popBackStack(Route.Home, inclusive = false) },
+                        onDeliver = { navController.navigate(Route.Deliver(it)) },
+                    )
+                }
+                composable<Route.Deliver> {
+                    DeliverScreen(onDone = {
+                        // Desde el código recién canjeado vuelve a Inicio (esa pantalla ya no está al día);
+                        // desde Mis canjes vuelve a la lista, que se actualiza sola desde Room
+                        val fromRedeem = navController.previousBackStackEntry?.destination?.hasRoute<Route.Redeem>() == true
+                        if (fromRedeem) navController.popBackStack(Route.Home, inclusive = false) else navController.navigateUp()
+                    })
+                }
                 composable<Route.Profile> {
                     ProfileScreen(
                         onBack = navController::navigateUp,

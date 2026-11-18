@@ -34,6 +34,14 @@ class DeliverViewModel(
         if (current.phase == Phase.Entering) _state.value = current.copy(pin = current.pin.dropLast(1))
     }
 
+    // Sin conexión o con un error del servidor el canje sigue activo: se puede volver a escribir el PIN
+    fun retry() {
+        val current = _state.value
+        if (current.phase == Phase.NoConnection || current.phase == Phase.Failed) {
+            _state.value = current.copy(pin = "", phase = Phase.Entering)
+        }
+    }
+
     private fun submit() {
         _state.value = _state.value.copy(phase = Phase.Sending)
         viewModelScope.launch {
@@ -45,7 +53,7 @@ class DeliverViewModel(
                 DeliveryResult.Rejected -> _state.value.copy(pin = "", phase = Phase.Rejected)
                 DeliveryResult.AlreadyUsed -> _state.value.copy(pin = "", phase = Phase.AlreadyUsed)
                 DeliveryResult.Expired -> _state.value.copy(pin = "", phase = Phase.Expired)
-                DeliveryResult.NotFound -> _state.value.copy(pin = "", phase = Phase.Expired)
+                DeliveryResult.NotFound -> _state.value.copy(pin = "", phase = Phase.Failed)
                 DeliveryResult.NoConnection -> _state.value.copy(pin = "", phase = Phase.NoConnection)
                 DeliveryResult.Unknown -> _state.value.copy(pin = "", phase = Phase.Failed)
             }
