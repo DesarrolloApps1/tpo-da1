@@ -1,6 +1,7 @@
 package com.takeabreak.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ListItem
@@ -28,7 +29,10 @@ import java.time.Duration
 import java.time.Instant
 
 @Composable
-fun RedemptionsScreen(viewModel: RedemptionsViewModel = viewModel(factory = RedemptionsViewModel.Factory)) {
+fun RedemptionsScreen(
+    onDeliverClick: (String) -> Unit = {},
+    viewModel: RedemptionsViewModel = viewModel(factory = RedemptionsViewModel.Factory),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     // Una sola fuente de hora para las cuentas regresivas de toda la lista
     val now by produceState(Instant.now()) {
@@ -40,13 +44,13 @@ fun RedemptionsScreen(viewModel: RedemptionsViewModel = viewModel(factory = Rede
 
     StateContent(state, emptyText = stringResource(R.string.redemptions_empty)) { rows ->
         LazyColumn(Modifier.fillMaxSize()) {
-            items(rows, key = { it.redemption.id }) { row -> RedemptionItem(row, now) }
+            items(rows, key = { it.redemption.id }) { row -> RedemptionItem(row, now, onDeliverClick) }
         }
     }
 }
 
 @Composable
-private fun RedemptionItem(row: RedemptionRow, now: Instant) {
+private fun RedemptionItem(row: RedemptionRow, now: Instant, onDeliverClick: (String) -> Unit) {
     val status = row.redemption.statusAt(now)
     var codeVisible by rememberSaveable(row.redemption.id) { mutableStateOf(false) }
 
@@ -54,7 +58,13 @@ private fun RedemptionItem(row: RedemptionRow, now: Instant) {
         headlineContent = { Text(row.title ?: stringResource(R.string.redemptions_unknown_reward)) },
         supportingContent = {
             if (status == RedemptionStatus.ACTIVE && codeVisible) {
-                Text(row.redemption.code.orEmpty(), style = MaterialTheme.typography.headlineMedium)
+                Column {
+                    Text(row.redemption.code.orEmpty(), style = MaterialTheme.typography.headlineMedium)
+                    // El cajero confirma la entrega con el PIN del local
+                    TextButton(onClick = { onDeliverClick(row.redemption.id) }) {
+                        Text(stringResource(R.string.redemptions_deliver))
+                    }
+                }
             } else {
                 Text(statusText(row.redemption, status, now))
             }

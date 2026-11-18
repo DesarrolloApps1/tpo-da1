@@ -59,6 +59,7 @@ import com.takeabreak.presentation.app.AppViewModel
 import com.takeabreak.ui.components.InitialAvatar
 import com.takeabreak.ui.components.OfflineBanner
 import com.takeabreak.ui.screens.AccessScreen
+import com.takeabreak.ui.screens.DeliverScreen
 import com.takeabreak.ui.screens.ActivityScreen
 import com.takeabreak.ui.screens.ExploreScreen
 import com.takeabreak.ui.screens.HomeScreen
@@ -153,6 +154,7 @@ fun AppNavHost(
                     RewardDetailScreen(onRedeem = { navController.navigate(Route.Redeem(it)) })
                 }
                 composable<Route.Redeem> { RedeemScreen(onDone = { navController.popBackStack(Route.Home, inclusive = false) }) }
+                composable<Route.Deliver> { DeliverScreen(onDone = { navController.navigateUp() }) }
                 composable<Route.Profile> {
                     ProfileScreen(
                         onBack = navController::navigateUp,
@@ -160,7 +162,7 @@ fun AppNavHost(
                     )
                 }
                 composable<Route.Redemptions>(deepLinks = listOf(navDeepLink { uriPattern = DeepLinks.REDEMPTIONS })) {
-                    RedemptionsScreen()
+                    RedemptionsScreen(onDeliverClick = { navController.navigate(Route.Deliver(it)) })
                 }
             }
         }

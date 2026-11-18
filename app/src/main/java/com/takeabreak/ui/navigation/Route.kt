@@ -14,4 +14,5 @@ sealed interface Route {
     @Serializable data object Redemptions : Route
     @Serializable data class RewardDetail(val id: String) : Route
     @Serializable data class Redeem(val id: String) : Route
+    @Serializable data class Deliver(val id: String) : Route
 }
