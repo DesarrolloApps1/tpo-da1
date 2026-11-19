@@ -26,6 +26,16 @@ GOOGLE_WEB_CLIENT_ID=1234567890-abc.apps.googleusercontent.com
 
 Es el mismo valor que el backend recibe en `GOOGLE_CLIENT_ID`. En el mismo proyecto de Google Cloud tiene que existir también un client ID de tipo Android con el paquete `com.takeabreak` y el SHA-1 del keystore de debug (`./gradlew signingReport`). Sin la clave la app compila y corre igual: el botón de Google queda deshabilitado y se entra con email.
 
+### Mapa de Explorar
+
+El mapa necesita una API key de Google Maps (Maps SDK for Android habilitado en Google Cloud) en `local.properties`:
+
+```properties
+MAPS_API_KEY=AIza...
+```
+
+Sin la clave la app compila y corre igual: Explorar muestra solo la lista, ordenada por distancia si el usuario da la ubicación o de la A a la Z si no.
+
 El token de sesión se guarda cifrado con AES-GCM y una clave del Android Keystore; en DataStore solo queda el texto cifrado. `AuthInterceptor` lo agrega como `Authorization: Bearer` y, si el backend responde 401, borra la sesión y la app vuelve a la pantalla de acceso. Las pausas y el historial no dependen de la sesión.
 
 Desde consola:
@@ -84,14 +94,13 @@ Requisitos funcionales de la consigna:
 |---|---|---|
 | RF01 | Detecta pausas con el bloqueo de pantalla y las valida con las reglas de puntos | Implementado y con tests de dominio |
 | RF02 | Saldo, meta, historial por día y racha | Implementado |
-| RF03 | Catálogo de premios con sincronización offline | Lista implementada. Mapa y orden por distancia pendientes (ver abajo) |
+| RF03 | Catálogo de premios con sincronización offline | Implementado: lista por distancia o de la A a la Z, filtro "Me alcanza" y mapa con la API key de Maps |
 | RF04 | Canje con código del servidor y confirmación de entrega con el PIN del comercio | Implementado. El canje necesita conexión |
 
 Pendiente, con su motivo:
 
 | Pendiente | Dónde | Motivo |
 |---|---|---|
-| Mapa con Google Maps y orden por distancia | `ui/screens/ExploreScreen.kt` | Falta la API key de Maps en `local.properties` del equipo |
 | Fuentes Bricolage Grotesque y DM Sans | `ui/theme/Theme.kt` | Pendiente de agregar los archivos a `res/font` |
 | Onboarding solo en el primer uso | `ui/navigation/AppNavHost.kt` | Falta el flag en DataStore |
 | Pantalla de permiso rechazado (frame 07) | `ui/screens/PermissionsScreen.kt` | Hoy, sin el acceso a uso se sigue igual a Inicio |

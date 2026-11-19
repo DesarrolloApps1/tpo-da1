@@ -26,6 +26,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Client ID web de Google Cloud; vacío deshabilita el botón de Google
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"${localProperties.getProperty("GOOGLE_WEB_CLIENT_ID", "")}\"")
+        // API key de Google Maps; vacía, Explorar muestra solo la lista
+        val mapsKey = localProperties.getProperty("MAPS_API_KEY", "")
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsKey\"")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsKey
     }
 
     buildTypes {
@@ -93,6 +97,7 @@ dependencies {
 
     implementation(libs.work.runtime)
     implementation(libs.play.services.location)
+    implementation(libs.maps.compose)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services)
     implementation(libs.googleid)

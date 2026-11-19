@@ -43,6 +43,11 @@
             </intent-filter>
         </activity>
 
+        <!-- API key de Google Maps desde local.properties (MAPS_API_KEY); fuera del repo -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
         <!-- Anota los cambios de hora del sistema; TIME_SET es un broadcast protegido, ninguna app lo puede falsificar -->
         <receiver
             android:name=".platform.usage.ClockChangeReceiver"
