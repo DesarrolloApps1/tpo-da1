@@ -11,6 +11,9 @@ interface SettingsRepository {
     // Interruptor de Perfil: apagado no se avisa, pero las pausas se siguen sumando
     val notificationsEnabled: Flow<Boolean>
 
+    // Ya vio el onboarding: las próximas veces la app arranca en el acceso
+    val onboardingDone: Flow<Boolean>
+
     // Hora en que se tocó el tile "Me tomo un break" (US-14); null si no hay declaración
     val declaredBreakAt: Flow<Instant?>
 
@@ -20,6 +23,7 @@ interface SettingsRepository {
     suspend fun saveCatalogSync(at: Instant)
     suspend fun declareBreak(at: Instant)
     suspend fun clearDeclaredBreak()
+    suspend fun setOnboardingDone()
 
     // Hasta dónde ya se leyeron los eventos de pantalla
     suspend fun checkpoint(): Instant

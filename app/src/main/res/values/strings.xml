@@ -73,6 +73,36 @@
     <string name="done">Listo</string>
 
     <string name="onboarding_title">1 hora = 1 recompensa</string>
+    <string name="splash_name">take a break</string>
+    <string name="splash_tagline">Soltá el celu. Ganás vos.</string>
+    <string name="onboarding_skip">Saltar</string>
+    <string name="onboarding_next">Siguiente</string>
+    <string name="onboarding_start">Empezar</string>
+    <string name="onboarding_hour">1 hora</string>
+    <string name="onboarding_points">60 pts</string>
+    <string name="onboarding_1_title">Soltá el celu.</string>
+    <string name="onboarding_1_accent">Ganás vos.</string>
+    <string name="onboarding_1_body">Cada minuto que el teléfono descansa se convierte en puntos.</string>
+    <string name="onboarding_2_title">Canjeá en tu</string>
+    <string name="onboarding_2_accent">barrio.</string>
+    <string name="onboarding_2_body">Cafés, librerías y clases cerca tuyo con premios reales.</string>
+    <string name="onboarding_3_title">No tenés que</string>
+    <string name="onboarding_3_accent">hacer nada.</string>
+    <string name="onboarding_3_body">Detectamos tus pausas solos: solo miramos cuándo la pantalla se prende y se apaga.</string>
+    <string name="onboarding_reward_1">Café + medialuna</string>
+    <string name="onboarding_reward_1_place">Cuervo Café · 350 m</string>
+    <string name="onboarding_reward_2">15 % off en libros</string>
+    <string name="onboarding_reward_2_place">Bosque Libros · 900 m</string>
+    <string name="onboarding_reward_3">Clase de yoga</string>
+    <string name="onboarding_reward_3_place">Estudio Prana · 1,2 km</string>
+    <string name="onboarding_ring_label">sin el celu</string>
+    <string name="denied_title">Sin este acceso no podemos contar tus pausas</string>
+    <string name="denied_body">Android lo llama “Acceso a uso”. Solo leemos cuándo se prende la pantalla.</string>
+    <string name="denied_step_1">Tocá Abrir ajustes</string>
+    <string name="denied_step_2">Buscá Take a Break</string>
+    <string name="denied_step_3">Activá Permitir acceso</string>
+    <string name="denied_open_settings">Abrir ajustes</string>
+    <string name="denied_skip">Ahora no, solo ver premios</string>
     <string name="continue_label">Continuar</string>
 
     <string name="access_logo">take a break</string>

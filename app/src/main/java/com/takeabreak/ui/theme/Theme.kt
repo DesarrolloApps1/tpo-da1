@@ -7,7 +7,12 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.takeabreak.R
 
 // Tokens del sistema de diseño (docs/figma/build.py)
 object Palette {
@@ -56,8 +61,34 @@ private val shapes = Shapes(
     large = RoundedCornerShape(24.dp),
 )
 
-// TODO: Bricolage Grotesque para títulos y DM Sans para texto (res/font)
-private val typography = Typography()
+// Fuentes variables (un archivo con todos los pesos): cada peso fija su eje "wght"
+private fun variableFamily(resId: Int, vararg weights: FontWeight) = FontFamily(
+    weights.map { weight -> Font(resId, weight, variationSettings = FontVariation.Settings(FontVariation.weight(weight.weight))) },
+)
+
+// Bricolage Grotesque para títulos y DM Sans para texto (licencias en third_party/fonts)
+private val Bricolage = variableFamily(R.font.bricolage_grotesque, FontWeight.SemiBold, FontWeight.Bold, FontWeight.ExtraBold)
+private val DmSans = variableFamily(R.font.dm_sans, FontWeight.Normal, FontWeight.Medium, FontWeight.SemiBold, FontWeight.Bold)
+
+private val typography = Typography().run {
+    copy(
+        displayLarge = displayLarge.copy(fontFamily = Bricolage, fontWeight = FontWeight.Bold),
+        displayMedium = displayMedium.copy(fontFamily = Bricolage, fontWeight = FontWeight.Bold),
+        displaySmall = displaySmall.copy(fontFamily = Bricolage, fontWeight = FontWeight.Bold),
+        headlineLarge = headlineLarge.copy(fontFamily = Bricolage, fontWeight = FontWeight.Bold),
+        headlineMedium = headlineMedium.copy(fontFamily = Bricolage, fontWeight = FontWeight.Bold),
+        headlineSmall = headlineSmall.copy(fontFamily = Bricolage, fontWeight = FontWeight.Bold),
+        titleLarge = titleLarge.copy(fontFamily = Bricolage, fontWeight = FontWeight.SemiBold),
+        titleMedium = titleMedium.copy(fontFamily = DmSans, fontWeight = FontWeight.SemiBold),
+        titleSmall = titleSmall.copy(fontFamily = DmSans, fontWeight = FontWeight.SemiBold),
+        bodyLarge = bodyLarge.copy(fontFamily = DmSans),
+        bodyMedium = bodyMedium.copy(fontFamily = DmSans),
+        bodySmall = bodySmall.copy(fontFamily = DmSans),
+        labelLarge = labelLarge.copy(fontFamily = DmSans, fontWeight = FontWeight.SemiBold),
+        labelMedium = labelMedium.copy(fontFamily = DmSans, fontWeight = FontWeight.Medium),
+        labelSmall = labelSmall.copy(fontFamily = DmSans, fontWeight = FontWeight.Medium),
+    )
+}
 
 @Composable
 fun TakeABreakTheme(content: @Composable () -> Unit) {

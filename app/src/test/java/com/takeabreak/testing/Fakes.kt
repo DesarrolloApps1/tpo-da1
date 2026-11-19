@@ -30,6 +30,7 @@ class FakeSettingsRepository : SettingsRepository {
     override val lastCatalogSync = MutableStateFlow<Instant?>(null)
     override val notificationsEnabled = MutableStateFlow(true)
     override val declaredBreakAt = MutableStateFlow<Instant?>(null)
+    override val onboardingDone = MutableStateFlow(false)
 
     override suspend fun setGoal(rewardId: String) {
         goalRewardId.value = rewardId
@@ -53,6 +54,10 @@ class FakeSettingsRepository : SettingsRepository {
 
     override suspend fun clearDeclaredBreak() {
         declaredBreakAt.value = null
+    }
+
+    override suspend fun setOnboardingDone() {
+        onboardingDone.value = true
     }
 
     val savedCheckpoints = mutableListOf<Instant>()

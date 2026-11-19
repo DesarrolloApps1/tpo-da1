@@ -27,6 +27,8 @@ class SettingsDataStore(context: Context) : SettingsRepository {
     override val lastCatalogSync: Flow<Instant?> = store.data.map { prefs -> prefs[LAST_CATALOG_SYNC]?.let(Instant::ofEpochMilli) }
     override val notificationsEnabled: Flow<Boolean> = store.data.map { it[NOTIFICATIONS_ENABLED] ?: true }
 
+    override val onboardingDone: Flow<Boolean> = store.data.map { it[ONBOARDING_DONE] ?: false }
+
     override val declaredBreakAt: Flow<Instant?> = store.data.map { prefs -> prefs[DECLARED_BREAK_AT]?.let(Instant::ofEpochMilli) }
 
     override suspend fun setGoal(rewardId: String) {
@@ -53,6 +55,10 @@ class SettingsDataStore(context: Context) : SettingsRepository {
         store.edit { it.remove(DECLARED_BREAK_AT) }
     }
 
+    override suspend fun setOnboardingDone() {
+        store.edit { it[ONBOARDING_DONE] = true }
+    }
+
     // La primera vez arranca desde ayer
     override suspend fun checkpoint(): Instant =
         store.data.first()[CHECKPOINT]?.let(Instant::ofEpochMilli) ?: Instant.now().minus(1, ChronoUnit.DAYS)
@@ -69,5 +75,6 @@ class SettingsDataStore(context: Context) : SettingsRepository {
         val CHECKPOINT = longPreferencesKey("events_checkpoint")
         val DECLARED_BREAK_AT = longPreferencesKey("declared_break_at")
         val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
+        val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
     }
 }
