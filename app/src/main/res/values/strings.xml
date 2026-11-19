@@ -130,6 +130,7 @@
     <string name="permission_usage">Acceso a uso</string>
     <string name="permission_notifications">Avisos del sistema</string>
     <string name="permission_location">Ubicación</string>
+    <string name="permission_battery">Sin límite de batería</string>
     <string name="permission_granted">Activo</string>
     <string name="permission_denied">Desactivado</string>
     <string name="profile_sign_out">Cerrar sesión</string>
@@ -140,9 +141,18 @@
     <string name="hours">%1$d h</string>
     <string name="hours_minutes">%1$d h %2$d min</string>
 
-    <string name="permissions_title">Dos permisos y listo.</string>
+    <string name="permissions_title">Un permiso y dos recomendados.</string>
     <string name="permissions_body">Con el acceso a uso vemos cuándo se bloquea y desbloquea la pantalla, nunca qué apps usás. Sin él no podemos contar tus pausas.</string>
     <string name="permissions_grant">Dar acceso a uso</string>
+    <string name="permissions_required">Obligatorio</string>
+    <string name="permissions_recommended">Recomendado</string>
+    <string name="permissions_usage_title">Acceso a uso</string>
+    <string name="permissions_notifications_title">Avisos</string>
+    <string name="permissions_notifications_body">Te avisamos cuando una pausa suma puntos.</string>
+    <string name="permissions_battery_title">Sin límite de batería</string>
+    <string name="permissions_battery_body">Sin esto el aviso puede tardar más, pero tus puntos se acreditan igual al abrir la app.</string>
+    <string name="permissions_allow">Activar</string>
+    <string name="permissions_active">Activo</string>
 
     <string name="notification_channel">Pausas y canjes</string>
     <string name="notification_break_validated">Break validado: +%1$d pts</string>

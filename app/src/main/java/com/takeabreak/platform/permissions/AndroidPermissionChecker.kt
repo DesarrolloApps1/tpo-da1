@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
@@ -22,6 +23,7 @@ class AndroidPermissionChecker(private val context: Context) : PermissionChecker
         AppPermission.NOTIFICATIONS -> NotificationManagerCompat.from(context).areNotificationsEnabled()
         AppPermission.LOCATION ->
             ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        AppPermission.BATTERY_OPTIMIZATION -> context.isIgnoringBatteryOptimizations()
     }
 
     // El acceso a uso no es un permiso de tiempo de ejecución: se consulta en AppOps.
@@ -42,13 +44,24 @@ class AndroidPermissionChecker(private val context: Context) : PermissionChecker
     }
 }
 
+private fun Context.isIgnoringBatteryOptimizations(): Boolean =
+    getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
+
 // Abre la pantalla de Ajustes donde se da cada permiso; si el fabricante no la tiene, los ajustes de la app
 fun Context.openSettingsFor(permission: AppPermission?) {
     val appDetails = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, "package:$packageName".toUri())
-    val intent = when (permission) {
-        AppPermission.USAGE_ACCESS -> Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
-        AppPermission.NOTIFICATIONS -> Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-        AppPermission.LOCATION, null -> appDetails
+    val intents = when (permission) {
+        AppPermission.USAGE_ACCESS -> listOf(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+        AppPermission.NOTIFICATIONS -> listOf(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName))
+        // Sin la exclusión, el diálogo del sistema la da en un toque. Ya dada, o si el fabricante
+        // bloquea el diálogo, la lista de optimización de batería para cambiarla a mano
+        AppPermission.BATTERY_OPTIMIZATION -> listOfNotNull(
+            Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, "package:$packageName".toUri())
+                .takeUnless { isIgnoringBatteryOptimizations() },
+            Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS),
+        )
+        AppPermission.LOCATION, null -> emptyList()
     }
-    runCatching { startActivity(intent) }.onFailure { startActivity(appDetails) }
+    val opened = intents.any { intent -> runCatching { startActivity(intent) }.isSuccess }
+    if (!opened) startActivity(appDetails)
 }

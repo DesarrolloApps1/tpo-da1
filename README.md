@@ -94,7 +94,7 @@ Pendiente, con su motivo:
 | Mapa con Google Maps y orden por distancia | `ui/screens/ExploreScreen.kt` | Falta la API key de Maps en `local.properties` del equipo |
 | Fuentes Bricolage Grotesque y DM Sans | `ui/theme/Theme.kt` | Pendiente de agregar los archivos a `res/font` |
 | Onboarding solo en el primer uso | `ui/navigation/AppNavHost.kt` | Falta el flag en DataStore |
-| Pantalla de permisos completa (notificaciones, batería, permiso rechazado) | `ui/screens/PermissionsScreen.kt` | Solo cubre el acceso a uso |
+| Pantalla de permiso rechazado (frame 07) | `ui/screens/PermissionsScreen.kt` | Hoy, sin el acceso a uso se sigue igual a Inicio |
 | Pruebas instrumentadas y en dispositivo real (`connectedDebugAndroidTest`, TalkBack, prueba con usuarios) | `androidTest/` | Se corren en un teléfono o emulador real |
 
 Limitaciones conocidas: una app modificada puede informar hasta 240 pts por día y cuenta (Play Integrity queda como trabajo futuro); la notificación de una pausa puede demorarse; no hay pagos reales; los comercios y premios son datos de ejemplo.

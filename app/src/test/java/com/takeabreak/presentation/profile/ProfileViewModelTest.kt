@@ -154,4 +154,15 @@ class ProfileViewModelTest {
         assertEquals(true, vm.permissions.value[AppPermission.USAGE_ACCESS])
         assertEquals(false, vm.permissions.value[AppPermission.LOCATION])
     }
+
+    @Test
+    fun `la exclusion de bateria aparece en Perfil y se actualiza al volver`() = runTest {
+        val vm = viewModel()
+        assertEquals(false, vm.permissions.value[AppPermission.BATTERY_OPTIMIZATION])
+
+        granted += AppPermission.BATTERY_OPTIMIZATION
+        vm.refreshPermissions()
+
+        assertEquals(true, vm.permissions.value[AppPermission.BATTERY_OPTIMIZATION])
+    }
 }
