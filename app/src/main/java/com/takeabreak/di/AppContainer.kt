@@ -102,8 +102,9 @@ class AppContainer(context: Context, private val baseUrl: String = BuildConfig.B
 
     // Plataforma
     val networkMonitor: NetworkMonitor by lazy { AndroidNetworkMonitor(appContext) }
+    // En debug suma la pausa simulada de la demo; en release es el lector real
     val usageEventsReader: UsageEventsReader by lazy {
-        AndroidUsageEventsReader(appContext, Duration.ofMinutes(breakRules.config.serviceLookbackMinutes.toLong()))
+        withDemoPauses(appContext, AndroidUsageEventsReader(appContext, Duration.ofMinutes(breakRules.config.serviceLookbackMinutes.toLong())))
     }
     // El interruptor de Perfil envuelve al notificador real
     val notifier: Notifier by lazy { PreferenceGatedNotifier(AndroidNotifier(appContext), settings) }
