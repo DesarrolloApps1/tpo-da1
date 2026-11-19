@@ -54,8 +54,9 @@ class SyncBreaks(
         // El checkpoint avanza también sobre las pausas descartadas, para no volver a leerlas
         breaks.save(sessions)
         if (declarationUsed) settings.clearDeclaredBreak()
-        val lastEnd = pauses.maxOf { it.end }
-        settings.saveCheckpoint(lastEnd.atZone(ZoneId.systemDefault()).toInstant())
+        // El checkpoint nunca retrocede, aunque llegue una pausa anterior (la simulada de la demo)
+        val lastEnd = pauses.maxOf { it.end }.atZone(ZoneId.systemDefault()).toInstant()
+        settings.saveCheckpoint(maxOf(lastEnd, settings.checkpoint()))
         return sessions
     }
 

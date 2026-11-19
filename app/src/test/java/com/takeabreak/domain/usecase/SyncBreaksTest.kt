@@ -282,4 +282,15 @@ class SyncBreaksTest {
 
         assertEquals(listOf(Triple(60, 0, BreakStatus.SERVICE_ACTIVE)), saved.summary())
     }
+
+    @Test
+    fun `una pausa anterior al checkpoint no lo hace retroceder`() = runTest {
+        syncBreaks(listOf(pause("2026-10-27T18:00", "2026-10-27T19:00")))
+
+        syncBreaks(listOf(pause("2026-10-27T14:00", "2026-10-27T15:00")))
+
+        val evening = LocalDateTime.parse("2026-10-27T19:00").atZone(ZoneId.systemDefault()).toInstant()
+        assertEquals(evening, settings.checkpoint())
+        assertEquals(2, breaks.sessions.value.size)
+    }
 }
