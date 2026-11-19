@@ -30,20 +30,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.lifecycleScope
 import androidx.work.WorkManager
+import com.takeabreak.di.appContainer
+import com.takeabreak.domain.model.Pause
 import com.takeabreak.domain.rules.BreakRules
 import com.takeabreak.platform.usage.AndroidUsageEventsReader
 import com.takeabreak.platform.usage.PauseAssembler
 import com.takeabreak.ui.theme.TakeABreakTheme
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.launch
 
 // Solo en debug: informe para la prueba técnica de US-01 en cada teléfono (sección 7 del documento)
 class DiagnosticsActivity : ComponentActivity() {
 
     private var report by mutableStateOf("")
+    private var demoStatus by mutableStateOf("")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +60,7 @@ class DiagnosticsActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
+                    DemoPauseSection(demoStatus, ::simulate)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = ::refresh) { Text("Actualizar") }
                         OutlinedButton(onClick = ::copyReport) { Text("Copiar informe") }
@@ -66,6 +74,29 @@ class DiagnosticsActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    // Guarda la pausa para la próxima lectura y corre la misma sincronización que el worker: reglas,
+    // Room, aviso y puntos. afternoon: de 14 h en adelante, para que sume aunque se ensaye de noche.
+    // declared: como si se hubiera tocado el tile justo antes, para mostrar el bonus
+    private fun simulate(minutes: Long, afternoon: Boolean, declared: Boolean) {
+        val now = LocalDateTime.now().withNano(0)
+        val end = if (afternoon) {
+            LocalDate.now().atTime(14, 0).plusMinutes(minutes).let { if (it.isAfter(now)) it.minusDays(1) else it }
+        } else {
+            now
+        }
+        val start = end.minusMinutes(minutes)
+        lifecycleScope.launch {
+            val container = applicationContext.appContainer
+            if (declared) container.settings.declareBreak(start.minusMinutes(1).atZone(ZoneId.systemDefault()).toInstant())
+            PrefsDemoPauseStore(this@DiagnosticsActivity).put(Pause(start, end))
+            demoStatus = runCatching { container.breakSync() }.fold(
+                onSuccess = { "Pausa simulada de ${FORMAT.format(start)} a ${FORMAT.format(end)}. Abrí Take a Break para verla." },
+                onFailure = { "No se pudo simular: ${it.message}" },
+            )
+            refresh()
         }
     }
 
