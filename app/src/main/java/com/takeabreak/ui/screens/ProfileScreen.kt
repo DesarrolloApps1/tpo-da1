@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
@@ -206,6 +207,7 @@ private val PERMISSION_ROWS = listOf(
     Triple(AppPermission.USAGE_ACCESS, R.string.permission_usage, Icons.Filled.Lock),
     Triple(AppPermission.NOTIFICATIONS, R.string.permission_notifications, Icons.Filled.Notifications),
     Triple(AppPermission.LOCATION, R.string.permission_location, Icons.Filled.LocationOn),
+    Triple(AppPermission.BATTERY_OPTIMIZATION, R.string.permission_battery, Icons.Filled.Settings),
 )
 
 // Toda la fila cambia el interruptor, no solo el Switch
