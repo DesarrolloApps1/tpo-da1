@@ -57,6 +57,12 @@
     <string name="redemptions_refunded">Devuelto · los puntos volvieron a tu saldo</string>
     <string name="explore_updated_now">Actualizado recién</string>
     <string name="explore_updated_ago">Actualizado hace %1$s</string>
+    <string name="explore_only_affordable">Me alcanza</string>
+    <string name="explore_use_location">Ordenar por cercanía</string>
+    <string name="explore_none_affordable">Todavía no te alcanza ningún premio.</string>
+    <string name="explore_business_distance">%1$s · a %2$s</string>
+    <string name="explore_distance_m">%1$d m</string>
+    <string name="explore_distance_km">%1$s km</string>
     <string name="reward_not_found">No encontramos este premio.</string>
 
     <string name="set_goal">Fijar como meta</string>
