@@ -3,9 +3,7 @@ package com.takeabreak.ui.navigation
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,6 +57,12 @@ import com.takeabreak.presentation.app.AppViewModel
 import com.takeabreak.ui.components.InitialAvatar
 import com.takeabreak.ui.components.OfflineBanner
 import com.takeabreak.ui.screens.AccessScreen
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.LifecycleResumeEffect
+import com.takeabreak.domain.model.AppPermission
+import com.takeabreak.platform.permissions.openSettingsFor
+import com.takeabreak.ui.screens.PermissionDeniedScreen
+import com.takeabreak.ui.screens.SplashScreen
 import com.takeabreak.ui.screens.DeliverScreen
 import com.takeabreak.ui.screens.ActivityScreen
 import com.takeabreak.ui.screens.ExploreScreen
@@ -81,7 +85,7 @@ private val tabs = listOf(
 
 // Antes de entrar: ahí no hay barra, ni avatar, ni aviso offline
 private fun NavDestination.isBeforeSignIn() =
-    hasRoute<Route.Onboarding>() || hasRoute<Route.Access>() || hasRoute<Route.Permissions>()
+    hasRoute<Route.Onboarding>() || hasRoute<Route.Access>() || hasRoute<Route.Permissions>() || hasRoute<Route.PermissionDenied>()
 
 // Flujo de Figma: onboarding → acceso → permisos → pestañas (Inicio, Explorar, Actividad) + Perfil
 @Composable
@@ -93,10 +97,11 @@ fun AppNavHost(
     val backStack by navController.currentBackStackEntryAsState()
     val destination = backStack?.destination
 
-    // Splash mientras se lee el token guardado: el destino inicial depende de la sesión
+    // Splash mientras se leen el token y la marca del onboarding: el destino inicial depende de los dos
     val signedIn = app.isSignedIn
-    if (signedIn == null) {
-        Box(Modifier.fillMaxSize().background(Palette.Forest))
+    val onboardingDone = app.onboardingDone
+    if (signedIn == null || onboardingDone == null) {
+        SplashScreen()
         return
     }
 
@@ -104,7 +109,14 @@ fun AppNavHost(
     fun afterSignIn(): Route = if (viewModel.needsPermissions()) Route.Permissions else Route.Home
 
     // Con sesión arranca en Inicio, así el atrás de un deep link vuelve a Inicio y nunca al acceso
-    val start = remember { if (signedIn) afterSignIn() else Route.Onboarding }
+    // El onboarding se muestra solo la primera vez
+    val start = remember {
+        when {
+            signedIn -> afterSignIn()
+            onboardingDone -> Route.Access
+            else -> Route.Onboarding
+        }
+    }
 
     // Al entrar sale del acceso; al cerrar sesión o recibir un 401 vuelve a él sin historial
     LaunchedEffect(signedIn, destination) {
@@ -130,9 +142,9 @@ fun AppNavHost(
         Column(Modifier.padding(padding)) {
             if (!app.isOnline && destination?.isBeforeSignIn() == false) OfflineBanner()
             NavHost(navController, startDestination = start, modifier = Modifier.weight(1f)) {
-                // TODO(US-05): saltear el primer uso si ya se completó (flag en DataStore)
                 composable<Route.Onboarding> {
                     OnboardingScreen(onDone = {
+                        viewModel.finishOnboarding()
                         val next = if (signedIn) afterSignIn() else Route.Access
                         navController.navigate(next) { popUpTo<Route.Onboarding> { inclusive = true } }
                     })
@@ -140,8 +152,24 @@ fun AppNavHost(
                 composable<Route.Access> { AccessScreen() }
                 composable<Route.Permissions> {
                     PermissionsScreen(onDone = {
-                        navController.navigate(Route.Home) { popUpTo<Route.Permissions> { inclusive = true } }
+                        // Sin el acceso a uso pasa por el frame 07, que explica qué se pierde
+                        val next = if (viewModel.needsPermissions()) Route.PermissionDenied else Route.Home
+                        navController.navigate(next) { popUpTo<Route.Permissions> { inclusive = true } }
                     })
+                }
+                composable<Route.PermissionDenied> {
+                    val context = LocalContext.current
+                    // Si lo dio desde Ajustes, al volver sigue a Inicio
+                    LifecycleResumeEffect(Unit) {
+                        if (!viewModel.needsPermissions()) {
+                            navController.navigate(Route.Home) { popUpTo<Route.PermissionDenied> { inclusive = true } }
+                        }
+                        onPauseOrDispose { }
+                    }
+                    PermissionDeniedScreen(
+                        onOpenSettings = { context.openSettingsFor(AppPermission.USAGE_ACCESS) },
+                        onSkip = { navController.navigate(Route.Explore) { popUpTo<Route.PermissionDenied> { inclusive = true } } },
+                    )
                 }
                 composable<Route.Home>(deepLinks = listOf(navDeepLink { uriPattern = DeepLinks.HOME })) {
                     HomeScreen(onRewardClick = { navController.navigate(Route.RewardDetail(it)) })

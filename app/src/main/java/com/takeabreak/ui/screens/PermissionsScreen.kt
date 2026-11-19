@@ -33,7 +33,7 @@ import com.takeabreak.platform.permissions.openSettingsFor
 import com.takeabreak.ui.components.PillButton
 import com.takeabreak.ui.theme.Palette
 
-// TODO(US-05): pantalla de permiso rechazado (frame 07)
+// El rechazo del acceso a uso lo muestra PermissionDeniedScreen (frame 07)
 // Frame 06: el acceso a uso es obligatorio; los avisos y la exclusión de batería, recomendados.
 // Se saltea si el acceso a uso ya está dado
 @Composable

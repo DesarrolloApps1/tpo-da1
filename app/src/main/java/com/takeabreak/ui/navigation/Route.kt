@@ -7,6 +7,7 @@ sealed interface Route {
     @Serializable data object Onboarding : Route
     @Serializable data object Access : Route
     @Serializable data object Permissions : Route
+    @Serializable data object PermissionDenied : Route
     @Serializable data object Home : Route
     @Serializable data object Explore : Route
     @Serializable data object Activity : Route
