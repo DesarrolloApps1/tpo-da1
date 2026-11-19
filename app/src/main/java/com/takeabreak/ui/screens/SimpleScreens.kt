@@ -56,7 +56,7 @@ fun SplashScreen() {
                 repeat(2) { Box(Modifier.width(10.dp).height(36.dp).clip(PillShape).background(Palette.Forest)) }
             }
         }
-        Text(stringResource(R.string.splash_name), color = Palette.Paper, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.splash_name), color = Palette.Paper, fontSize = 36.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall)
         Text(stringResource(R.string.splash_tagline), color = Palette.Lime, style = MaterialTheme.typography.titleMedium)
     }
 }
@@ -125,13 +125,13 @@ private fun EquationIllustration() {
     Box(Modifier.size(300.dp).clip(CircleShape).background(Palette.Lime.copy(alpha = 0.3f)), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Surface(shape = PillShape, color = Palette.Paper, border = BorderStroke(2.dp, Palette.Forest)) {
-                Text(stringResource(R.string.onboarding_hour), Modifier.padding(horizontal = 40.dp, vertical = 16.dp), fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Palette.Forest)
+                Text(stringResource(R.string.onboarding_hour), Modifier.padding(horizontal = 40.dp, vertical = 16.dp), fontSize = 40.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall, color = Palette.Forest)
             }
             Box(Modifier.size(48.dp).clip(CircleShape).background(Palette.Forest), contentAlignment = Alignment.Center) {
-                Text("=", color = Palette.Lime, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                Text("=", color = Palette.Lime, fontSize = 28.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall)
             }
             Surface(shape = PillShape, color = Palette.Lime) {
-                Text(stringResource(R.string.onboarding_points), Modifier.padding(horizontal = 40.dp, vertical = 16.dp), fontSize = 40.sp, fontWeight = FontWeight.Bold, color = Palette.Forest)
+                Text(stringResource(R.string.onboarding_points), Modifier.padding(horizontal = 40.dp, vertical = 16.dp), fontSize = 40.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall, color = Palette.Forest)
             }
         }
     }
@@ -170,7 +170,7 @@ private fun RingIllustration() {
     Box(Modifier.size(280.dp), contentAlignment = Alignment.Center) {
         CircularProgressIndicator(progress = { 0.78f }, modifier = Modifier.size(260.dp), color = Palette.Green, trackColor = Palette.Line, strokeWidth = 18.dp)
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("47:12", fontSize = 56.sp, fontWeight = FontWeight.Bold, color = Palette.Forest)
+            Text("47:12", fontSize = 56.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall, color = Palette.Forest)
             Text(stringResource(R.string.onboarding_ring_label), color = Palette.Muted)
         }
     }
@@ -185,7 +185,7 @@ fun PermissionDeniedScreen(onOpenSettings: () -> Unit, onSkip: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(Modifier.size(104.dp).clip(CircleShape).background(Palette.Red.copy(alpha = 0.12f)), contentAlignment = Alignment.Center) {
-            Text("✕", color = Palette.Red, fontSize = 40.sp, fontWeight = FontWeight.Bold, modifier = Modifier.clearAndSetSemantics { })
+            Text("✕", color = Palette.Red, fontSize = 40.sp, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.displaySmall, modifier = Modifier.clearAndSetSemantics { })
         }
         Text(stringResource(R.string.denied_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = Palette.Ink)
         Text(stringResource(R.string.denied_body), color = Palette.Muted)

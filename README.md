@@ -101,7 +101,6 @@ Pendiente, con su motivo:
 
 | Pendiente | Dónde | Motivo |
 |---|---|---|
-| Fuentes Bricolage Grotesque y DM Sans | `ui/theme/Theme.kt` | Pendiente de agregar los archivos a `res/font` |
 | Pruebas instrumentadas y en dispositivo real (`connectedDebugAndroidTest`, TalkBack, prueba con usuarios) | `androidTest/` | Se corren en un teléfono o emulador real |
 
 Limitaciones conocidas: una app modificada puede informar hasta 240 pts por día y cuenta (Play Integrity queda como trabajo futuro); la notificación de una pausa puede demorarse; no hay pagos reales; los comercios y premios son datos de ejemplo.
