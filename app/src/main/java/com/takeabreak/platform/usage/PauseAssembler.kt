@@ -9,7 +9,7 @@ import java.time.ZoneId
 // serviceKey: identifica al servicio para emparejar su inicio con su fin. Es un número opaco
 // calculado al leer; el nombre de la app no sale del lector ni se guarda
 data class ScreenEvent(val at: Instant, val kind: Kind, val serviceKey: Int? = null) {
-    enum class Kind { LOCK, UNLOCK, SHUTDOWN, STARTUP, CLOCK_CHANGE, SERVICE_START, SERVICE_STOP }
+    enum class Kind { SCREEN_OFF, SCREEN_ON, LOCK, UNLOCK, SHUTDOWN, STARTUP, CLOCK_CHANGE, SERVICE_START, SERVICE_STOP }
 }
 
 // Arma las pausas cerradas de una secuencia de eventos. No usa Android, así se prueba en la JVM
@@ -26,6 +26,9 @@ object PauseAssembler {
         val pauses = mutableListOf<Pause>()
         var lockedAt: Instant? = null
         var clockChanged = false
+        // Si apareció la pantalla de bloqueo, la pausa termina al desbloquear; si no (bloqueo de
+        // pantalla en "Ninguno", que no emite eventos de bloqueo), termina al prender la pantalla
+        var keyguardSeen = false
         // Servicios corriendo (clave → inicio) y los que ya pararon, como intervalos
         val running = mutableMapOf<Int, Instant>()
         val stopped = mutableListOf<Pair<Instant, Instant>>()
@@ -50,10 +53,20 @@ object PauseAssembler {
         for (event in events.sortedBy { it.at }) {
             when (event.kind) {
                 // Un segundo bloqueo seguido es la pantalla que se encendió por una notificación: la pausa sigue
-                ScreenEvent.Kind.LOCK -> if (lockedAt == null) {
+                ScreenEvent.Kind.SCREEN_OFF -> if (lockedAt == null) {
                     lockedAt = event.at
                     clockChanged = false
+                    keyguardSeen = false
                 }
+                ScreenEvent.Kind.LOCK -> {
+                    if (lockedAt == null) {
+                        lockedAt = event.at
+                        clockChanged = false
+                    }
+                    keyguardSeen = true
+                }
+                // Con bloqueo, prender la pantalla (por ejemplo, una notificación) no corta la pausa
+                ScreenEvent.Kind.SCREEN_ON -> if (!keyguardSeen) close(event.at)
                 // Un desbloqueo sin bloqueo antes es el cierre de una pausa ya leída: se ignora
                 ScreenEvent.Kind.UNLOCK -> close(event.at)
                 // El tiempo apagado no cuenta: la pausa termina al apagar
