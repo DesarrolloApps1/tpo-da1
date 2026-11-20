@@ -145,7 +145,9 @@ private fun RewardsIllustration() {
         Triple(R.string.onboarding_reward_2, R.string.onboarding_reward_2_place, "300 pts"),
         Triple(R.string.onboarding_reward_3, R.string.onboarding_reward_3_place, "400 pts"),
     )
-    Box(Modifier.size(300.dp).clip(CircleShape).background(Palette.Pink.copy(alpha = 0.4f)), contentAlignment = Alignment.Center) {
+    // El círculo va detrás y sin recortar: las tarjetas son más anchas que él
+    Box(contentAlignment = Alignment.Center) {
+        Box(Modifier.size(300.dp).clip(CircleShape).background(Palette.Pink.copy(alpha = 0.4f)))
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             examples.forEach { (title, place, points) ->
                 Surface(shape = RoundedCornerShape(20.dp), color = Palette.Paper, border = BorderStroke(1.dp, Palette.Line), modifier = Modifier.width(280.dp)) {
