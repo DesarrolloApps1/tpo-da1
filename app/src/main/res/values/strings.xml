@@ -203,7 +203,10 @@
     <string name="tile_label">Me tomo un break</string>
     <string name="tile_subtitle_active">Bloqueá el teléfono</string>
 
-    <string name="home_streak">Racha: %1$d días seguidos</string>
+    <plurals name="home_streak">
+        <item quantity="one">Racha: %1$d día</item>
+        <item quantity="other">Racha: %1$d días seguidos</item>
+    </plurals>
     <string name="home_affordable">Te alcanza hoy</string>
     <string name="home_goal">Tu meta: %1$s</string>
     <string name="home_goal_reached">Ya te alcanza para tu meta.</string>

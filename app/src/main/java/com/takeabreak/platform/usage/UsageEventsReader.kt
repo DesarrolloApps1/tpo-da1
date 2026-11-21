@@ -50,8 +50,8 @@ class AndroidUsageEventsReader(
     }
 
     companion object {
-        // Solo estos eventos (RNF03). Los de pantalla no arman pausas; se cuentan en el diagnóstico
-        // de la prueba técnica. Los de servicios existen desde Android 10: en Android 9 la regla del
+        // Solo estos eventos (RNF03). Los de pantalla arman la pausa cuando el teléfono no tiene
+        // bloqueo de pantalla, que no emite los de bloqueo (comprobado en el emulador). Los de servicios existen desde Android 10: en Android 9 la regla del
         // servicio activo no se aplica
         val SCREEN_EVENTS = setOf(
             UsageEvents.Event.SCREEN_INTERACTIVE,
@@ -67,6 +67,8 @@ class AndroidUsageEventsReader(
         private val SERVICE_KINDS = setOf(ScreenEvent.Kind.SERVICE_START, ScreenEvent.Kind.SERVICE_STOP)
 
         private val KINDS = mapOf(
+            UsageEvents.Event.SCREEN_NON_INTERACTIVE to ScreenEvent.Kind.SCREEN_OFF,
+            UsageEvents.Event.SCREEN_INTERACTIVE to ScreenEvent.Kind.SCREEN_ON,
             UsageEvents.Event.KEYGUARD_SHOWN to ScreenEvent.Kind.LOCK,
             UsageEvents.Event.KEYGUARD_HIDDEN to ScreenEvent.Kind.UNLOCK,
             UsageEvents.Event.DEVICE_SHUTDOWN to ScreenEvent.Kind.SHUTDOWN,

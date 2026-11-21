@@ -161,4 +161,37 @@ class PauseAssemblerTest {
 
         assertEquals(0, PauseAssembler.closedPauses(events, zone).single().serviceMinutes)
     }
+
+    private fun screenOff(at: String) = event(at, ScreenEvent.Kind.SCREEN_OFF)
+    private fun screenOn(at: String) = event(at, ScreenEvent.Kind.SCREEN_ON)
+
+    @Test
+    fun `sin bloqueo de pantalla la pausa va de apagar a prender la pantalla`() {
+        // Con el bloqueo en "Ninguno" Android no emite KEYGUARD_SHOWN ni KEYGUARD_HIDDEN
+        val events = listOf(screenOff("2026-10-27T10:00"), screenOn("2026-10-27T11:00"))
+
+        assertEquals(listOf(pause("2026-10-27T10:00", "2026-10-27T11:00")), PauseAssembler.closedPauses(events, zone))
+    }
+
+    @Test
+    fun `con bloqueo prender la pantalla sin desbloquear no corta la pausa`() {
+        val events = listOf(
+            screenOff("2026-10-27T10:00"), lock("2026-10-27T10:00"),
+            screenOn("2026-10-27T10:20"), screenOff("2026-10-27T10:21"),
+            screenOn("2026-10-27T10:59"), unlock("2026-10-27T11:00"),
+        )
+
+        assertEquals(listOf(pause("2026-10-27T10:00", "2026-10-27T11:00")), PauseAssembler.closedPauses(events, zone))
+    }
+
+    @Test
+    fun `si se prende la pantalla antes de que aparezca el bloqueo la pausa termina ahi`() {
+        // "Bloquear 5 s después de apagar": se apagó y se volvió a prender en 3 s
+        val events = listOf(screenOff("2026-10-27T10:00:00"), screenOn("2026-10-27T10:00:03"))
+
+        assertEquals(
+            listOf(Pause(LocalDateTime.parse("2026-10-27T10:00:00"), LocalDateTime.parse("2026-10-27T10:00:03"))),
+            PauseAssembler.closedPauses(events, zone),
+        )
+    }
 }
