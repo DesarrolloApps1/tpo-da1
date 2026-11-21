@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,7 +49,7 @@ fun HomeScreen(
             }
             item { DayProgress(summary) }
             if (summary.streakDays > 0) {
-                item { Text(stringResource(R.string.home_streak, summary.streakDays), style = MaterialTheme.typography.titleMedium) }
+                item { Text(pluralStringResource(R.plurals.home_streak, summary.streakDays, summary.streakDays), style = MaterialTheme.typography.titleMedium) }
             }
             summary.goal?.let { goal -> item { GoalCard(goal, summary.spendable, onRewardClick) } }
             if (summary.affordable.isNotEmpty()) {
