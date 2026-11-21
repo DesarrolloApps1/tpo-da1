@@ -17,8 +17,12 @@
         android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
         tools:ignore="BatteryLife" />
 
+    <!-- Sin copia de seguridad en la nube: las pausas nunca salen del teléfono (RNF03) y el token
+         cifrado no sirve en otro dispositivo, porque su clave vive en el Keystore -->
     <application
         android:name=".TakeABreakApp"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
